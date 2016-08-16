@@ -23,3 +23,4 @@
 *.xtxt
 *.rpt
 data
+*log*
