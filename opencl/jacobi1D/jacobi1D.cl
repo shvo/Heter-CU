@@ -17,10 +17,9 @@
 typedef float DATA_TYPE;
 
 __kernel __attribute__ ((reqd_work_group_size(1024,1,1)))
-__kernel void runJacobi1D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B)
+void runJacobi1D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B)
 {
-        event_t event;
-        __local DATA_TYPE A_local[1026] /*__attribute__((xcl_array_partition(cyclic,2,1)))*/;
+        __local DATA_TYPE A_local[1026];
         __local DATA_TYPE B_local[1024];
         int g_id = get_group_id(0);
         if (g_id == 0) {
@@ -37,7 +36,6 @@ __kernel void runJacobi1D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B)
         }
         barrier(CLK_LOCAL_MEM_FENCE);
 
-       // __attribute__((xcl_pipeline_workitems)){
 	int i = get_local_id(0);
         if (g_id == 0) {
 	  if (i >= 1)
@@ -62,6 +60,7 @@ __kernel void runJacobi1D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B)
             B_local[i] = A_local[i]; 
           }
         }
-        //}
-        async_work_group_copy(&A[1024*g_id], B_local, 1024, event);
+        barrier(CLK_LOCAL_MEM_FENCE);
+
+        async_work_group_copy(&A[1024*g_id], B_local, 1024, 0);
 }
