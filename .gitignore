@@ -1,5 +1,6 @@
 # compilation files
 *.o
+*.xo
 *.exe
 *.txt
 *.out
