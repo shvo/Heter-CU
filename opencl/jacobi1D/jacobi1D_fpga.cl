@@ -19,7 +19,7 @@ typedef float DATA_TYPE;
 #define M 16384
 #define N 256
 
-__kernel __attribute__ ((reqd_work_group_size(N,1,1)))
+__kernel __attribute__ ((reqd_work_group_size(1,1,1)))
 void runJacobi1D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B)
 {
         __local DATA_TYPE A_local[N+2];
@@ -36,27 +36,34 @@ void runJacobi1D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B)
         }
         barrier(CLK_LOCAL_MEM_FENCE);
 
-	int i = get_local_id(0);
+	int i;
+
         if (g_id == 0) {
-	  if (i == 0)
-	  {
-            B_local[i] = A_local[i]; 
-	  }
-          else {
-              B_local[i] = 0.33333f * (A_local[i-1] + A_local[i] + A_local[i + 1]);
-          }
+            for( i = 0; i < N; ++i) {
+	        if (i == 0) {
+                    B_local[i] = A_local[i]; 
+	        }
+                else {
+                    B_local[i] = 0.33333f * (A_local[i-1] + A_local[i] + A_local[i + 1]);
+                }
+            }
         }
+
         else if (g_id > 0 & g_id < M/N - 1) { 
-	    B_local[i] = 0.33333f * (A_local[i] + A_local[i+1] + A_local[i + 2]);
+            for( i = 0; i < N; ++i) {
+	        B_local[i] = 0.33333f * (A_local[i] + A_local[i+1] + A_local[i + 2]);
+            }
         }
-        else if (g_id == M/N - 1) {
-	  if (i == N - 1)
-	  {
-              B_local[i] = A_local[i+1]; 
-	  }
-          else {
-	      B_local[i] = 0.33333f * (A_local[i] + A_local[i+1] + A_local[i + 2]);
-          }
+
+        else {
+            for( i = 0; i < N; ++i) {
+	        if (i == N - 1) {
+                    B_local[i] = A_local[i+1]; 
+	        }
+                else {
+	            B_local[i] = 0.33333f * (A_local[i] + A_local[i+1] + A_local[i + 2]);
+                }
+            }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
 

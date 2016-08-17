@@ -126,7 +126,7 @@ void read_cl_file(char** argv)
 {
         #if OPENCL_DEVICE_SELECTION!=CL_DEVICE_TYPE_ACCELERATOR
 	// Load the kernel source code into the array source_str
-	fp = fopen("jacobi1D_gpu.cl", "r");
+	fp = fopen("jacobi1D_fpga.cl", "r");
 	if (!fp) {
 		fprintf(stderr, "Failed to load kernel.\n");
 		exit(1);
@@ -263,9 +263,10 @@ void cl_load_prog()
 void cl_launch_kernel1(int n)
 {
 	size_t localWorkSize[2], globalWorkSize[2];
-        localWorkSize[0] = DIM_LOCAL_WORK_GROUP_X;
+        //localWorkSize[0] = DIM_LOCAL_WORK_GROUP_X;
+        localWorkSize[0] = 1;
 	localWorkSize[1] = 1;
-	globalWorkSize[0] = N;
+	globalWorkSize[0] = N / DIM_LOCAL_WORK_GROUP_X;
 	globalWorkSize[1] = 1;
 	
 	// Set the arguments of the kernel
@@ -279,11 +280,11 @@ void cl_launch_kernel1(int n)
         }
 	//errcode |= clSetKernelArg(clKernel1, 2, sizeof(int), (void *)&n);
         //errcode |= clSetKernelArg(clKernel1, 3, sizeof(float)*N, NULL);
-	if(errcode != CL_SUCCESS) printf("Error in seting arguments of kernel1\n");
+	if(errcode != CL_SUCCESS) printf("Error %d in seting arguments of kernel1\n", errcode);
 
 	// Execute the OpenCL kernel
 	errcode = clEnqueueNDRangeKernel(clCommandQue, clKernel1, 2, NULL, globalWorkSize, localWorkSize, 0, NULL, NULL);
-	if(errcode != CL_SUCCESS) printf("Error in launching kernel1\n");
+	if(errcode != CL_SUCCESS) printf("Error %d in launching kernel1\n", errcode);
 	clFinish(clCommandQue);
 }
 
