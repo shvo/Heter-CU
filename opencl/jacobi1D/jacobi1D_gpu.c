@@ -126,7 +126,7 @@ void read_cl_file(char** argv)
 {
         #if OPENCL_DEVICE_SELECTION!=CL_DEVICE_TYPE_ACCELERATOR
 	// Load the kernel source code into the array source_str
-	fp = fopen("jacobi1D.cl", "r");
+	fp = fopen("jacobi1D_gpu.cl", "r");
 	if (!fp) {
 		fprintf(stderr, "Failed to load kernel.\n");
 		exit(1);
