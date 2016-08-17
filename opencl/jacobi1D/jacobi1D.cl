@@ -21,7 +21,7 @@ __kernel void runJacobi1D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B)
         //__local DATA_TYPE a0, a1, a2;
         int i = get_global_id(0);
         
-        if ( i > 0 & i < 4095) {
+        if ( i > 0 & i < 16383) {
 	    B[i] = 0.33333 * (A[i-1] + A[i] + A[i + 1]);
             /*
             a0 = A[i-1];

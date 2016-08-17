@@ -11,7 +11,7 @@
 #ifndef JACOBI1D_H
 # define JACOBI1D_H
 
-//#define EXTRALARGE_DATASET
+#define EXTRALARGE_DATASET
 //#define MINI_DATASET
 
 /* Default to STANDARD_DATASET. */

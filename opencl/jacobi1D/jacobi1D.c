@@ -266,7 +266,7 @@ void cl_launch_kernel1(int n)
 	size_t localWorkSize[2], globalWorkSize[2];
         //localWorkSize[0] = N/4;
 	//localWorkSize[1] = DIM_LOCAL_WORK_GROUP_Y;
-        localWorkSize[0] = N;
+        localWorkSize[0] = DIM_LOCAL_WORK_GROUP_X;
 	localWorkSize[1] = 1;
 	globalWorkSize[0] = N;
 	globalWorkSize[1] = 1;
