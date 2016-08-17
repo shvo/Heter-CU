@@ -38,26 +38,24 @@ void runJacobi1D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B)
 
 	int i = get_local_id(0);
         if (g_id == 0) {
-	  if (i >= 1)
+	  if (i == 0)
 	  {
-	    B_local[i] = 0.33333f * (A_local[i-1] + A_local[i] + A_local[i + 1]);
-
+            B_local[i] = A_local[i]; 
 	  }
           else {
-            B_local[i] = A_local[i]; 
+              B_local[i] = 0.33333f * (A_local[i-1] + A_local[i] + A_local[i + 1]);
           }
         }
         else if (g_id == 1 | g_id == 2) { 
 	    B_local[i] = 0.33333f * (A_local[i] + A_local[i+1] + A_local[i + 2]);
         }
         else if (g_id == 3) {
-	  if (i < 1023)
+	  if (i == 1023)
 	  {
-	    B_local[i] = 0.33333f * (A_local[i] + A_local[i+1] + A_local[i + 2]);
-
+              B_local[i] = A_local[i+1]; 
 	  }
           else {
-            B_local[i] = A_local[i+1]; 
+	      B_local[i] = 0.33333f * (A_local[i] + A_local[i+1] + A_local[i + 2]);
           }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
