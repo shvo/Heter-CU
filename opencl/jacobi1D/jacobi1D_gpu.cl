@@ -57,7 +57,7 @@ void runJacobi1D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B)
 
 	  }
           else {
-            B_local[i] = A_local[i]; 
+            B_local[i] = A_local[i+1]; 
           }
         }
         barrier(CLK_LOCAL_MEM_FENCE);

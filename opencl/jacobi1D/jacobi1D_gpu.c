@@ -32,7 +32,7 @@
 #include <polybenchUtilFuncts.h>
 
 //define the error threshold for the results "not matching"
-#define PERCENT_DIFF_ERROR_THRESHOLD 5.00
+#define PERCENT_DIFF_ERROR_THRESHOLD 1.05
 
 #define MAX_SOURCE_SIZE (0x100000)
 
