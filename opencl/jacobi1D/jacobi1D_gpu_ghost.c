@@ -397,6 +397,9 @@ int main(int argc, char** argv)
 	int t;
 	//for (t = 0; t < _PB_TSTEPS ; t++)
         for (t = 0; t < _PB_TSTEPS / 256 ; t++)
+        //for (t = 0; t < _PB_TSTEPS / 128 ; t++)
+        //for (t = 0; t < _PB_TSTEPS / 64 ; t++)
+        //for (t = 0; t < _PB_TSTEPS / 32 ; t++)
 	{
                 cl_launch_kernel1(0);
 	}
