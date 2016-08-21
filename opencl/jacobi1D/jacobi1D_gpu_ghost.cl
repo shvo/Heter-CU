@@ -37,7 +37,7 @@ void runJacobi1D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B)
         }
         barrier(CLK_LOCAL_MEM_FENCE);
 
-        int i = 0, t = 0;
+        int i, t;
         for (t = 1; t <= T; ++t) {
             if (g_id == 0) {
                 for (i = 0; i < N+T - t; ++i) {
@@ -45,7 +45,7 @@ void runJacobi1D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B)
                         B_local[i] = A_local[i]; 
 	            }
                     else {
-                        B_local[i] = 0.33333f * (A_local[i-1] + A_local[i] + A_local[i + 1]);
+                        B_local[i] = 0.33333f * (A_local[i - 1] + A_local[i] + A_local[i + 1]);
                     }
                 }
                 for (i = 0; i < N+T - t; ++i) {
@@ -61,20 +61,25 @@ void runJacobi1D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B)
                 }
             }
             else {
-                for (i = 0; i < N+T - t; ++i) {
-                    if (i == N+T - t - 1) {
+                for (i = t; i < N+T; ++i) {
+                    if (i == N+T - 1) {
                         B_local[i] = A_local[i]; 
 	            }
                     else {
-                        B_local[i] = 0.33333f * (A_local[i + t - 1] + A_local[i + t] + A_local[i + t + 1]);
+                        B_local[i] = 0.33333f * (A_local[i - 1] + A_local[i] + A_local[i + 1]);
                     }
                 }
-                for (i = 0; i < N+T - t; ++i) {
-                       A_local[i + t] = B_local[i];
+                for (i = t; i < N+T; ++i) {
+                       A_local[i] = B_local[i];
                 }
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
 
-        async_work_group_copy(&A[N*g_id], B_local, N, 0);
+        if (g_id == M/N - 1 ) {
+            async_work_group_copy(&A[M-N], &B_local[T], N, 0);
+        }
+        else {
+            async_work_group_copy(&A[N*g_id], B_local, N, 0);
+        }
 }
