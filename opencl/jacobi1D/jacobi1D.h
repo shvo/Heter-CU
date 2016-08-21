@@ -23,7 +23,7 @@
 # if !defined(TSTEPS) && !defined(N)
 /* Define the possible dataset sizes. */
 #  ifdef MINI_DATASET
-#define TSTEPS 10000
+#define TSTEPS 16384
 #define N 1024
 #  endif
 
