@@ -24,3 +24,5 @@
 *.rpt
 data
 *log*
+*_xocc*
+.Xil*

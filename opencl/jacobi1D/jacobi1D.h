@@ -43,7 +43,7 @@
 #  endif
 
 #  ifdef EXTRALARGE_DATASET
-#define TSTEPS 10000
+#define TSTEPS 16384
 #define N 16384
 #  endif
 # endif /* !N */
