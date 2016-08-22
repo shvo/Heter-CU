@@ -22,6 +22,9 @@ typedef float DATA_TYPE;
 
 pipe float p1 __attribute__((xcl_reqd_pipe_depth(16)));
 pipe float p2 __attribute__((xcl_reqd_pipe_depth(16)));
+pipe float p3 __attribute__((xcl_reqd_pipe_depth(16)));
+pipe float p4 __attribute__((xcl_reqd_pipe_depth(16)));
+
 
 __kernel __attribute__ ((reqd_work_group_size(1,1,1)))
 void runJacobi1D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B)
@@ -46,7 +49,7 @@ void runJacobi1D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B)
                     B_local[i] = 0.33333f * (A_local[i - 1] + A_local[i] + A_local[i + 1]);
                 }
             }
-            read_pipe_block(p1, &B_local[N-1]);
+            read_pipe_block(p2, &B_local[N-1]);
 
             if (t != T) {
                 __attribute__((xcl_pipeline_loop))
@@ -71,8 +74,8 @@ void runJacobi1D_kernel2(__global DATA_TYPE* A, __global DATA_TYPE* B)
         async_work_group_copy(A_local, A, N, 0);
         barrier(CLK_LOCAL_MEM_FENCE);
 
-        write_pipe_block(p2, &A_local[0]);
-        write_pipe_block(p2, &A_local[1]);
+        write_pipe_block(p3, &A_local[0]);
+        write_pipe_block(p3, &A_local[1]);
 
         int i, t;
         for (t = 1; t <= T; ++t) {
@@ -85,15 +88,15 @@ void runJacobi1D_kernel2(__global DATA_TYPE* A, __global DATA_TYPE* B)
                     B_local[i] = 0.33333f * (A_local[i - 1] + A_local[i] + A_local[i + 1]);
                 }
             }
-            read_pipe_block(p2, &B_local[0]);
+            read_pipe_block(p4, &B_local[0]);
 
             if (t != T) {
                 __attribute__((xcl_pipeline_loop))
                 for (i = 0; i <= N-1; ++i) {
                     A_local[i] = B_local[i];
                 }
-                write_pipe_block(p2, &A_local[0]);
-                write_pipe_block(p2, &A_local[1]);
+                write_pipe_block(p3, &A_local[0]);
+                write_pipe_block(p3, &A_local[1]);
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
@@ -108,12 +111,12 @@ void runJacobi1D_connect_1_2(int foo)
     //while(1) {
         read_pipe_block(p1, &tmp1);
         read_pipe_block(p1, &tmp2);
-        read_pipe_block(p2, &tmp3);
-        read_pipe_block(p2, &tmp4);
+        read_pipe_block(p3, &tmp3);
+        read_pipe_block(p3, &tmp4);
 
         tmp2 = 0.33333f * (tmp1 + tmp2 + tmp3);
         tmp3 = 0.33333f * (tmp2 + tmp3 + tmp4);
-        write_pipe_block(p1, tmp2);
-        write_pipe_block(p2, tmp3);
+        write_pipe_block(p2, &tmp2);
+        write_pipe_block(p4, &tmp3);
     //}
 }
