@@ -174,11 +174,11 @@ void cl_initialization()
 
         // GPU platform id
         #if OPENCL_DEVICE_SELECTION==CL_DEVICE_TYPE_CPU
-        platform_id = platforms[0];
+        platform_id = platforms[1];
         #elif OPENCL_DEVICE_SELECTION==CL_DEVICE_TYPE_GPU
         platform_id = platforms[0];
         #else 
-        platform_id = platforms[0];
+        platform_id = platforms[2];
         #endif
 
 	errcode = clGetPlatformInfo(platform_id,CL_PLATFORM_NAME, sizeof(str_temp), str_temp,NULL);
