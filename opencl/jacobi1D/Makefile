@@ -16,6 +16,7 @@ FPGA_SRC = jacobi1D_fpga.c
 FPGA_GHOST_SRC = jacobi1D_fpga_ghost.c
 FPGA_HETER-GHOST_SRC = jacobi1D_fpga_heter-ghost.c
 FPGA_HETER-GHOST-NOWHILE_SRC = jacobi1D_fpga_heter-ghost-nowhile.c
+FPGA_HETER-GHOST-NOWHILE-N4096_SRC = jacobi1D_fpga_heter-ghost-nowhile-N4096.c
 FPGA_BOARD_SRC = jacobi1D_fpga_board.c
 WI_FPGA_BOARD_SRC = jacobi1D_wi_fpga_board.c
 
@@ -26,6 +27,7 @@ all: jacobi1D.exe \
      jacobi1D_fpga_ghost.exe \
      jacobi1D_fpga_heter-ghost.exe \
      jacobi1D_fpga_heter-ghost-nowhile.exe \
+     jacobi1D_fpga_heter-ghost-nowhile-N4096.exe \
      jacobi1D_fpga_board.exe \
      jacobi1D_wi_fpga_board.exe \
 
@@ -49,6 +51,9 @@ jacobi1D_fpga_heter-ghost.exe: $(FPGA_HETER-GHOST_SRC)
 
 jacobi1D_fpga_heter-ghost-nowhile.exe: $(FPGA_HETER-GHOST-NOWHILE_SRC)
 	$(CC) $(FPGA_HETER-GHOST-NOWHILE_SRC) $(CCFLAGS) $(LIBS) -I$(OPENCL_INC) -I$(PATH_TO_COMMON) -L$(OPENCL_LIB) -o $@
+
+jacobi1D_fpga_heter-ghost-nowhile-N4096.exe: $(FPGA_HETER-GHOST-NOWHILE-N4096_SRC)
+	$(CC) $(FPGA_HETER-GHOST-NOWHILE-N4096_SRC) $(CCFLAGS) $(LIBS) -I$(OPENCL_INC) -I$(PATH_TO_COMMON) -L$(OPENCL_LIB) -o $@
 
 jacobi1D_fpga_board.exe: $(FPGA_BOARD_SRC)
 	$(CC) $(FPGA_BOARD_SRC) $(CCFLAGS) $(LIBS) -I$(OPENCL_INC) -I$(PATH_TO_COMMON) -L$(OPENCL_LIB) -o $@
