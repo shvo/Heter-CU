@@ -49,6 +49,7 @@ void runJacobi1D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B)
                         B_local[i] = 0.33333f * (A_local[i - 1] + A_local[i] + A_local[i + 1]);
                     }
                 }
+                __attribute__((xcl_pipeline_loop))
                 for (i = 0; i < N+T - t; ++i) {
                     A_local[i] = B_local[i];
                 }
@@ -58,6 +59,7 @@ void runJacobi1D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B)
                 for (i = 0; i < N+T*2 - t*2; ++i) {
                     B_local[i] = 0.33333f * (A_local[i + t - 1] + A_local[i + t] + A_local[i + t + 1]);
                 }
+                __attribute__((xcl_pipeline_loop))
                 for (i = 0; i < N+T*2 - t*2; ++i) {
                     A_local[t+i] = B_local[i];
                 }
@@ -72,6 +74,7 @@ void runJacobi1D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B)
                         B_local[i] = 0.33333f * (A_local[i - 1] + A_local[i] + A_local[i + 1]);
                     }
                 }
+                __attribute__((xcl_pipeline_loop))
                 for (i = t; i < N+T; ++i) {
                        A_local[i] = B_local[i];
                 }
