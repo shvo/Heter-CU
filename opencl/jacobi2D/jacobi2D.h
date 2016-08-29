@@ -11,6 +11,8 @@
 #ifndef JACOBI2D_H
 # define JACOBI2D_H
 
+#define STANDARD_DATASET
+
 /* Default to STANDARD_DATASET. */
 # if !defined(MINI_DATASET) && !defined(SMALL_DATASET) && !defined(LARGE_DATASET) && !defined(EXTRALARGE_DATASET)
 #  define STANDARD_DATASET
