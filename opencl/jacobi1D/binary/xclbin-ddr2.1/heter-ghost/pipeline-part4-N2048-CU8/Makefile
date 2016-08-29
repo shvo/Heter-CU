@@ -45,7 +45,7 @@ jacobi1D_heter-ghost_pipeline_part4_N2048_T64_cu8.xclbin: ./jacobi1D_heter-ghost
 
 jacobi1D_heter-ghost_pipeline_part4_N2048_T32_cu8.xclbin: ./jacobi1D_heter-ghost_pipeline_part4_N2048_cu8.cl
 	$(XOCC) $(CLFLAGS) -D T=32 --report system $< -o $@ ;\
-	mv system_estimate.xtxt system_estimate_T2048.xtxt ;\
+	mv system_estimate.xtxt system_estimate_T32.xtxt ;\
 
 jacobi1D_heter-ghost_pipeline_part4_N2048_T16_cu8.xclbin: ./jacobi1D_heter-ghost_pipeline_part4_N2048_cu8.cl
 	$(XOCC) $(CLFLAGS) -D T=16 --report system $< -o $@ ;\

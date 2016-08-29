@@ -20,7 +20,7 @@
 #endif
 
 #define POLYBENCH_TIME 1
-#define TT 64
+#define TT 2048
 
 //select the OpenCL device to use (can be GPU, CPU, or Accelerator such as Intel Xeon Phi)
 
@@ -56,7 +56,11 @@ cl_kernel clKernel1;
 cl_kernel clKernel2;
 cl_kernel clKernel3;
 cl_kernel clKernel4;
-cl_kernel clConnect_1_4;
+cl_kernel clKernel5;
+cl_kernel clKernel6;
+cl_kernel clKernel7;
+cl_kernel clKernel8;
+cl_kernel clConnect_1_8;
 cl_command_queue clCommandQue;
 cl_program clProgram;
 cl_mem a_mem_obj_k1;
@@ -67,6 +71,14 @@ cl_mem a_mem_obj_k3;
 cl_mem b_mem_obj_k3;
 cl_mem a_mem_obj_k4;
 cl_mem b_mem_obj_k4;
+cl_mem a_mem_obj_k5;
+cl_mem b_mem_obj_k5;
+cl_mem a_mem_obj_k6;
+cl_mem b_mem_obj_k6;
+cl_mem a_mem_obj_k7;
+cl_mem b_mem_obj_k7;
+cl_mem a_mem_obj_k8;
+cl_mem b_mem_obj_k8;
 FILE *fp;
 char *source_str;
 size_t source_size;
@@ -224,25 +236,41 @@ void cl_mem_init(DATA_TYPE POLYBENCH_1D(A,N,n), DATA_TYPE POLYBENCH_1D(B,N,n))
 	if(errcode != CL_SUCCESS)printf("Error in writing buffers\n");
         */
 
-	a_mem_obj_k1 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/4 * sizeof(DATA_TYPE), NULL, &errcode);
-	b_mem_obj_k1 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/4 * sizeof(DATA_TYPE), NULL, &errcode);
-	a_mem_obj_k2 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/4 * sizeof(DATA_TYPE), NULL, &errcode);
-	b_mem_obj_k2 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/4 * sizeof(DATA_TYPE), NULL, &errcode);
-        a_mem_obj_k3 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/4 * sizeof(DATA_TYPE), NULL, &errcode);
-	b_mem_obj_k3 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/4 * sizeof(DATA_TYPE), NULL, &errcode);
-	a_mem_obj_k4 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/4 * sizeof(DATA_TYPE), NULL, &errcode);
-	b_mem_obj_k4 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/4 * sizeof(DATA_TYPE), NULL, &errcode);
+	a_mem_obj_k1 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/8 * sizeof(DATA_TYPE), NULL, &errcode);
+	b_mem_obj_k1 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/8 * sizeof(DATA_TYPE), NULL, &errcode);
+	a_mem_obj_k2 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/8 * sizeof(DATA_TYPE), NULL, &errcode);
+	b_mem_obj_k2 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/8 * sizeof(DATA_TYPE), NULL, &errcode);
+        a_mem_obj_k3 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/8 * sizeof(DATA_TYPE), NULL, &errcode);
+	b_mem_obj_k3 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/8 * sizeof(DATA_TYPE), NULL, &errcode);
+	a_mem_obj_k4 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/8 * sizeof(DATA_TYPE), NULL, &errcode);
+	b_mem_obj_k4 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/8 * sizeof(DATA_TYPE), NULL, &errcode);
+        a_mem_obj_k5 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/8 * sizeof(DATA_TYPE), NULL, &errcode);
+	b_mem_obj_k5 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/8 * sizeof(DATA_TYPE), NULL, &errcode);
+	a_mem_obj_k6 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/8 * sizeof(DATA_TYPE), NULL, &errcode);
+	b_mem_obj_k6 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/8 * sizeof(DATA_TYPE), NULL, &errcode);
+        a_mem_obj_k7 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/8 * sizeof(DATA_TYPE), NULL, &errcode);
+	b_mem_obj_k7 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/8 * sizeof(DATA_TYPE), NULL, &errcode);
+	a_mem_obj_k8 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/8 * sizeof(DATA_TYPE), NULL, &errcode);
+	b_mem_obj_k8 = clCreateBuffer(clGPUContext, CL_MEM_READ_WRITE, N/8 * sizeof(DATA_TYPE), NULL, &errcode);
 		
 	if(errcode != CL_SUCCESS) printf("Error in creating buffers\n");
 
-	errcode = clEnqueueWriteBuffer(clCommandQue, a_mem_obj_k1, CL_TRUE, 0, N/4 * sizeof(DATA_TYPE), &A[0], 0, NULL, NULL);
-	errcode = clEnqueueWriteBuffer(clCommandQue, b_mem_obj_k1, CL_TRUE, 0, N/4 * sizeof(DATA_TYPE), &B[0], 0, NULL, NULL);
-	errcode = clEnqueueWriteBuffer(clCommandQue, a_mem_obj_k2, CL_TRUE, 0, N/4 * sizeof(DATA_TYPE), &A[N/4], 0, NULL, NULL);
-	errcode = clEnqueueWriteBuffer(clCommandQue, b_mem_obj_k2, CL_TRUE, 0, N/4 * sizeof(DATA_TYPE), &B[N/4], 0, NULL, NULL);
-	errcode = clEnqueueWriteBuffer(clCommandQue, a_mem_obj_k3, CL_TRUE, 0, N/4 * sizeof(DATA_TYPE), &A[N/2], 0, NULL, NULL);
-	errcode = clEnqueueWriteBuffer(clCommandQue, b_mem_obj_k3, CL_TRUE, 0, N/4 * sizeof(DATA_TYPE), &B[N/2], 0, NULL, NULL);
-	errcode = clEnqueueWriteBuffer(clCommandQue, a_mem_obj_k4, CL_TRUE, 0, N/4 * sizeof(DATA_TYPE), &A[N*3/4], 0, NULL, NULL);
-	errcode = clEnqueueWriteBuffer(clCommandQue, b_mem_obj_k4, CL_TRUE, 0, N/4 * sizeof(DATA_TYPE), &B[N*3/4], 0, NULL, NULL);
+	errcode = clEnqueueWriteBuffer(clCommandQue, a_mem_obj_k1, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), &A[0], 0, NULL, NULL);
+	errcode = clEnqueueWriteBuffer(clCommandQue, b_mem_obj_k1, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), &B[0], 0, NULL, NULL);
+	errcode = clEnqueueWriteBuffer(clCommandQue, a_mem_obj_k2, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), &A[N/8], 0, NULL, NULL);
+	errcode = clEnqueueWriteBuffer(clCommandQue, b_mem_obj_k2, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), &B[N/8], 0, NULL, NULL);
+	errcode = clEnqueueWriteBuffer(clCommandQue, a_mem_obj_k3, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), &A[N*2/8], 0, NULL, NULL);
+	errcode = clEnqueueWriteBuffer(clCommandQue, b_mem_obj_k3, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), &B[N*2/8], 0, NULL, NULL);
+	errcode = clEnqueueWriteBuffer(clCommandQue, a_mem_obj_k4, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), &A[N*3/8], 0, NULL, NULL);
+	errcode = clEnqueueWriteBuffer(clCommandQue, b_mem_obj_k4, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), &B[N*3/8], 0, NULL, NULL);
+	errcode = clEnqueueWriteBuffer(clCommandQue, a_mem_obj_k5, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), &A[N*4/8], 0, NULL, NULL);
+	errcode = clEnqueueWriteBuffer(clCommandQue, b_mem_obj_k5, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), &B[N*4/8], 0, NULL, NULL);
+	errcode = clEnqueueWriteBuffer(clCommandQue, a_mem_obj_k6, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), &A[N*5/8], 0, NULL, NULL);
+	errcode = clEnqueueWriteBuffer(clCommandQue, b_mem_obj_k6, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), &B[N*5/8], 0, NULL, NULL);
+	errcode = clEnqueueWriteBuffer(clCommandQue, a_mem_obj_k7, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), &A[N*6/8], 0, NULL, NULL);
+	errcode = clEnqueueWriteBuffer(clCommandQue, b_mem_obj_k7, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), &B[N*6/8], 0, NULL, NULL);
+	errcode = clEnqueueWriteBuffer(clCommandQue, a_mem_obj_k7, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), &A[N*7/8], 0, NULL, NULL);
+	errcode = clEnqueueWriteBuffer(clCommandQue, b_mem_obj_k7, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), &B[N*7/8], 0, NULL, NULL);
 	if(errcode != CL_SUCCESS)printf("Error in writing buffers\n");
 }
 
@@ -296,8 +324,20 @@ void cl_load_prog()
         clKernel4 = clCreateKernel(clProgram, "runJacobi1D_kernel4", &errcode);
 	if(errcode != CL_SUCCESS) printf("Error in creating kernel 4\n");
 
-	clConnect_1_4 = clCreateKernel(clProgram, "runJacobi1D_connect_1_4", &errcode);
-	if(errcode != CL_SUCCESS) printf("Error in creating connect_1_4\n");
+        clKernel5 = clCreateKernel(clProgram, "runJacobi1D_kernel5", &errcode);
+	if(errcode != CL_SUCCESS) printf("Error in creating kernel 5\n");
+
+	clKernel6 = clCreateKernel(clProgram, "runJacobi1D_kernel6", &errcode);
+	if(errcode != CL_SUCCESS) printf("Error in creating kernel 6\n");
+
+        clKernel7 = clCreateKernel(clProgram, "runJacobi1D_kernel7", &errcode);
+	if(errcode != CL_SUCCESS) printf("Error in creating kernel 7\n");
+
+        clKernel8 = clCreateKernel(clProgram, "runJacobi1D_kernel8", &errcode);
+	if(errcode != CL_SUCCESS) printf("Error in creating kernel 8\n");
+
+	clConnect_1_8 = clCreateKernel(clProgram, "runJacobi1D_connect_1_4", &errcode);
+	if(errcode != CL_SUCCESS) printf("Error in creating connect_1_8\n");
 
 	clFinish(clCommandQue);
 }
@@ -328,6 +368,14 @@ void cl_launch_kernels(int n)
 	  errcode |=  clSetKernelArg(clKernel3, 1, sizeof(cl_mem), (void *)&b_mem_obj_k3);
 	  errcode |=  clSetKernelArg(clKernel4, 0, sizeof(cl_mem), (void *)&a_mem_obj_k4);
 	  errcode |=  clSetKernelArg(clKernel4, 1, sizeof(cl_mem), (void *)&b_mem_obj_k4);
+	  errcode  =  clSetKernelArg(clKernel5, 0, sizeof(cl_mem), (void *)&a_mem_obj_k5);
+	  errcode |=  clSetKernelArg(clKernel5, 1, sizeof(cl_mem), (void *)&b_mem_obj_k5);
+	  errcode |=  clSetKernelArg(clKernel6, 0, sizeof(cl_mem), (void *)&a_mem_obj_k6);
+	  errcode |=  clSetKernelArg(clKernel6, 1, sizeof(cl_mem), (void *)&b_mem_obj_k6);
+	  errcode |=  clSetKernelArg(clKernel7, 0, sizeof(cl_mem), (void *)&a_mem_obj_k7);
+	  errcode |=  clSetKernelArg(clKernel7, 1, sizeof(cl_mem), (void *)&b_mem_obj_k7);
+	  errcode |=  clSetKernelArg(clKernel8, 0, sizeof(cl_mem), (void *)&a_mem_obj_k8);
+	  errcode |=  clSetKernelArg(clKernel8, 1, sizeof(cl_mem), (void *)&b_mem_obj_k8);
         }
         else {
           errcode  =  clSetKernelArg(clKernel1, 0, sizeof(cl_mem), (void *)&b_mem_obj_k1);
@@ -338,11 +386,19 @@ void cl_launch_kernels(int n)
 	  errcode |=  clSetKernelArg(clKernel3, 1, sizeof(cl_mem), (void *)&a_mem_obj_k3);
           errcode |=  clSetKernelArg(clKernel4, 0, sizeof(cl_mem), (void *)&b_mem_obj_k4);
 	  errcode |=  clSetKernelArg(clKernel4, 1, sizeof(cl_mem), (void *)&a_mem_obj_k4);
+          errcode  =  clSetKernelArg(clKernel5, 0, sizeof(cl_mem), (void *)&b_mem_obj_k5);
+	  errcode |=  clSetKernelArg(clKernel5, 1, sizeof(cl_mem), (void *)&a_mem_obj_k5);
+          errcode |=  clSetKernelArg(clKernel6, 0, sizeof(cl_mem), (void *)&b_mem_obj_k6);
+	  errcode |=  clSetKernelArg(clKernel6, 1, sizeof(cl_mem), (void *)&a_mem_obj_k6);
+          errcode |=  clSetKernelArg(clKernel7, 0, sizeof(cl_mem), (void *)&b_mem_obj_k7);
+	  errcode |=  clSetKernelArg(clKernel7, 1, sizeof(cl_mem), (void *)&a_mem_obj_k7);
+          errcode |=  clSetKernelArg(clKernel8, 0, sizeof(cl_mem), (void *)&b_mem_obj_k8);
+	  errcode |=  clSetKernelArg(clKernel8, 1, sizeof(cl_mem), (void *)&a_mem_obj_k8);
         }
         int foo = 0;
-        errcode  |=  clSetKernelArg(clConnect_1_4, 0, sizeof(int), &foo);
+        errcode  |=  clSetKernelArg(clConnect_1_8, 0, sizeof(int), &foo);
 
-	if(errcode != CL_SUCCESS) printf("Error in seting arguments of kernel1-4 or connect_1_4\n");
+	if(errcode != CL_SUCCESS) printf("Error in seting arguments of kernel1-4 or connect_1_8\n");
 
 	// Execute the OpenCL kernels
         cl_event event_kernel1;
@@ -365,10 +421,30 @@ void cl_launch_kernels(int n)
 	if(errcode != CL_SUCCESS) printf("Error in launching kernel4\n");
         printf("kernel4 is launched\n");
 
-        cl_event event_connect_1_4;
-	errcode = clEnqueueNDRangeKernel(clCommandQue, clConnect_1_4, 2, NULL, connect_globalWorkSize, connect_localWorkSize, 0, NULL, &event_connect_1_4);
-	if(errcode != CL_SUCCESS) printf("Error in launching connect_1_4\n");
-        printf("connect_1_4 is launched\n");
+        cl_event event_kernel5;
+	errcode = clEnqueueNDRangeKernel(clCommandQue, clKernel5, 2, NULL, globalWorkSize, localWorkSize, 0, NULL, &event_kernel5);
+	if(errcode != CL_SUCCESS) printf("Error in launching kernel5\n");
+        printf("kernel5 is launched\n");
+
+        cl_event event_kernel6;
+	errcode = clEnqueueNDRangeKernel(clCommandQue, clKernel6, 2, NULL, globalWorkSize, localWorkSize, 0, NULL, &event_kernel6);
+	if(errcode != CL_SUCCESS) printf("Error in launching kernel6\n");
+        printf("kernel6 is launched\n");
+
+        cl_event event_kernel7;
+	errcode = clEnqueueNDRangeKernel(clCommandQue, clKernel7, 2, NULL, globalWorkSize, localWorkSize, 0, NULL, &event_kernel7);
+	if(errcode != CL_SUCCESS) printf("Error in launching kernel7\n");
+        printf("kernel7 is launched\n");
+
+        cl_event event_kernel8;
+	errcode = clEnqueueNDRangeKernel(clCommandQue, clKernel8, 2, NULL, globalWorkSize, localWorkSize, 0, NULL, &event_kernel8);
+	if(errcode != CL_SUCCESS) printf("Error in launching kernel8\n");
+        printf("kernel8 is launched\n");
+
+        cl_event event_connect_1_8;
+	errcode = clEnqueueNDRangeKernel(clCommandQue, clConnect_1_8, 2, NULL, connect_globalWorkSize, connect_localWorkSize, 0, NULL, &event_connect_1_8);
+	if(errcode != CL_SUCCESS) printf("Error in launching connect_1_8\n");
+        printf("connect_1_8 is launched\n");
 
 	clFinish(clCommandQue);
         //clWaitForEvents(1, &event_kernel1);
@@ -410,7 +486,11 @@ void cl_clean_up()
 	errcode = clReleaseKernel(clKernel2);
 	errcode = clReleaseKernel(clKernel3);
 	errcode = clReleaseKernel(clKernel4);
-	errcode = clReleaseKernel(clConnect_1_4);
+	errcode = clReleaseKernel(clKernel5);
+	errcode = clReleaseKernel(clKernel6);
+	errcode = clReleaseKernel(clKernel7);
+	errcode = clReleaseKernel(clKernel8);
+	errcode = clReleaseKernel(clConnect_1_8);
 	errcode = clReleaseProgram(clProgram);
 	errcode = clReleaseMemObject(a_mem_obj_k1);
 	errcode = clReleaseMemObject(b_mem_obj_k1);
@@ -420,6 +500,14 @@ void cl_clean_up()
 	errcode = clReleaseMemObject(b_mem_obj_k3);
 	errcode = clReleaseMemObject(a_mem_obj_k4);
 	errcode = clReleaseMemObject(b_mem_obj_k4);
+	errcode = clReleaseMemObject(a_mem_obj_k5);
+	errcode = clReleaseMemObject(b_mem_obj_k5);
+	errcode = clReleaseMemObject(a_mem_obj_k6);
+	errcode = clReleaseMemObject(b_mem_obj_k6);
+	errcode = clReleaseMemObject(a_mem_obj_k7);
+	errcode = clReleaseMemObject(b_mem_obj_k7);
+	errcode = clReleaseMemObject(a_mem_obj_k8);
+	errcode = clReleaseMemObject(b_mem_obj_k8);
 	errcode = clReleaseCommandQueue(clCommandQue);
 	errcode = clReleaseContext(clGPUContext);
 	if(errcode != CL_SUCCESS) printf("Error in cleanup\n");
@@ -510,15 +598,24 @@ int main(int argc, char** argv)
   	polybench_stop_instruments;
  	polybench_print_instruments;
 	
-	errcode = clEnqueueReadBuffer(clCommandQue, a_mem_obj_k1, CL_TRUE, 0, N/4 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(a_outputFromGpu), 0, NULL, NULL);
-	errcode = clEnqueueReadBuffer(clCommandQue, a_mem_obj_k2, CL_TRUE, 0, N/4 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(a_outputFromGpu)+N/4, 0, NULL, NULL);
-        errcode = clEnqueueReadBuffer(clCommandQue, a_mem_obj_k3, CL_TRUE, 0, N/4 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(a_outputFromGpu)+N/2, 0, NULL, NULL);
-	errcode = clEnqueueReadBuffer(clCommandQue, a_mem_obj_k4, CL_TRUE, 0, N/4 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(a_outputFromGpu)+N*3/4, 0, NULL, NULL);
+	errcode = clEnqueueReadBuffer(clCommandQue, a_mem_obj_k1, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(a_outputFromGpu), 0, NULL, NULL);
+	errcode = clEnqueueReadBuffer(clCommandQue, a_mem_obj_k2, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(a_outputFromGpu)+N*1/8, 0, NULL, NULL);
+        errcode = clEnqueueReadBuffer(clCommandQue, a_mem_obj_k3, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(a_outputFromGpu)+N*2/8, 0, NULL, NULL);
+	errcode = clEnqueueReadBuffer(clCommandQue, a_mem_obj_k4, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(a_outputFromGpu)+N*3/8, 0, NULL, NULL);
+	errcode = clEnqueueReadBuffer(clCommandQue, a_mem_obj_k5, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(a_outputFromGpu)+N*4/8, 0, NULL, NULL);
+	errcode = clEnqueueReadBuffer(clCommandQue, a_mem_obj_k6, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(a_outputFromGpu)+N*5/8, 0, NULL, NULL);
+        errcode = clEnqueueReadBuffer(clCommandQue, a_mem_obj_k7, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(a_outputFromGpu)+N*6/8, 0, NULL, NULL);
+	errcode = clEnqueueReadBuffer(clCommandQue, a_mem_obj_k8, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(a_outputFromGpu)+N*7/8, 0, NULL, NULL);
 
-	errcode = clEnqueueReadBuffer(clCommandQue, b_mem_obj_k1, CL_TRUE, 0, N/4 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(b_outputFromGpu), 0, NULL, NULL);
-	errcode = clEnqueueReadBuffer(clCommandQue, b_mem_obj_k2, CL_TRUE, 0, N/4 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(b_outputFromGpu)+N/4, 0, NULL, NULL);
-	errcode = clEnqueueReadBuffer(clCommandQue, b_mem_obj_k3, CL_TRUE, 0, N/4 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(b_outputFromGpu)+N/2, 0, NULL, NULL);
-	errcode = clEnqueueReadBuffer(clCommandQue, b_mem_obj_k4, CL_TRUE, 0, N/4 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(b_outputFromGpu)+N*3/4, 0, NULL, NULL);
+
+	errcode = clEnqueueReadBuffer(clCommandQue, b_mem_obj_k1, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(b_outputFromGpu), 0, NULL, NULL);
+	errcode = clEnqueueReadBuffer(clCommandQue, b_mem_obj_k2, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(b_outputFromGpu)+N*1/8, 0, NULL, NULL);
+	errcode = clEnqueueReadBuffer(clCommandQue, b_mem_obj_k3, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(b_outputFromGpu)+N*2/8, 0, NULL, NULL);
+	errcode = clEnqueueReadBuffer(clCommandQue, b_mem_obj_k4, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(b_outputFromGpu)+N*3/8, 0, NULL, NULL);
+	errcode = clEnqueueReadBuffer(clCommandQue, b_mem_obj_k5, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(b_outputFromGpu)+N*4/8, 0, NULL, NULL);
+	errcode = clEnqueueReadBuffer(clCommandQue, b_mem_obj_k6, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(b_outputFromGpu)+N*5/8, 0, NULL, NULL);
+	errcode = clEnqueueReadBuffer(clCommandQue, b_mem_obj_k7, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(b_outputFromGpu)+N*6/8, 0, NULL, NULL);
+	errcode = clEnqueueReadBuffer(clCommandQue, b_mem_obj_k8, CL_TRUE, 0, N/8 * sizeof(DATA_TYPE), POLYBENCH_ARRAY(b_outputFromGpu)+N*7/8, 0, NULL, NULL);
 
 	if(errcode != CL_SUCCESS) printf("Error in reading GPU mem\n");
 		

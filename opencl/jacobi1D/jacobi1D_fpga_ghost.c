@@ -20,6 +20,8 @@
 #endif
 
 #define POLYBENCH_TIME 1
+#define NN 4096
+#define TT 2048
 
 //select the OpenCL device to use (can be GPU, CPU, or Accelerator such as Intel Xeon Phi)
 
@@ -267,7 +269,8 @@ void cl_launch_kernel1(int n)
         localWorkSize[0] = 1;
 	localWorkSize[1] = 1;
 	//globalWorkSize[0] = N;
-        globalWorkSize[0] = N / DIM_LOCAL_WORK_GROUP_X;;
+        //globalWorkSize[0] = N / DIM_LOCAL_WORK_GROUP_X;
+        globalWorkSize[0] = N / NN;
 	globalWorkSize[1] = 1;
 	
 	// Set the arguments of the kernel
@@ -396,7 +399,7 @@ int main(int argc, char** argv)
 	
 	int t;
 	//for (t = 0; t < _PB_TSTEPS ; t++)
-        for (t = 0; t < _PB_TSTEPS / 256 ; t++)
+        for (t = 0; t < _PB_TSTEPS / TT ; t++)
         //for (t = 0; t < _PB_TSTEPS / 128 ; t++)
         //for (t = 0; t < _PB_TSTEPS / 64 ; t++)
         //for (t = 0; t < _PB_TSTEPS / 32 ; t++)
