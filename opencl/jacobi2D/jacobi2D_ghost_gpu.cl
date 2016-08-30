@@ -30,7 +30,7 @@ void runJacobi2D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B, int n)
     int gid_x = get_group_id(0);
     int gid_y = get_group_id(1);
 
-    int i;
+    int i,j;
     if (gid_y == 0) {
         if (gid_x == 0) {
             for (i = 0; i < Y + T; ++i) {
@@ -61,7 +61,6 @@ void runJacobi2D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B, int n)
         else {
             for (i = 0; i < Y + 2*T; ++i) {
                 async_work_group_copy(&A_local[(X+T)*i], &A[(gid_y*Y+i-T)*M + gid_x*X-T], X+T, 0);
-
         }
     }
     else {
@@ -81,14 +80,78 @@ void runJacobi2D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B, int n)
     }
     barrier(CLK_LOCAL_MEM_FENCE);
 
-	if ((i >= 1) && (i < (n-1)) && (j >= 1) && (j < (n-1)))
-	{
-		B[i*n + j] = 0.2f * (A[i*n + j] + A[i*n + (j-1)] + A[i*n + (1 + j)] + A[(1 + i)*n + j] + A[(i-1)*n + j]);	
-	}
-        barrier(CLK_LOCAL_MEM_FENCE);
+    int t;
+    for (t = 1; t <= T; ++t) { 
+        if (gid_y == 0) {
+            if (gid_x == 0) {
+                for (j = 1; j <= Y+T-1-t; ++j) {
+                    for (i = 1; i <= X+T-1-t; ++i) {
+                        B_local[j*(X+T) + i] = 0.2f * (A_local[j*(X+T) + i] + A_local[j*(X+T) + (i - 1)] + A_local[j*(X+T) + (i + 1)] + A_local[(j+1)*(X+T) + i] + A_local[(j-1)*(X+T) + i]);
+                    }
+                }
+            }
+            else if (gid_x < M/X-1) {
+                for (j = 1; j <= Y+T-1-t; ++j) {
+                    for (i = t; i <= X+2*T-1-t; ++i) {
+                        B_local[j*(X+2*T) + i] = 0.2f * (A_local[j*(X+2*T) + i] + A_local[j*(X+2*T) + (i - 1)] + A_local[j*(X+2*T) + (i + 1)] + A_local[(j+1)*(X+2*T) + i] + A_local[(j-1)*(X+2*T) + i]);
+                    }
+                }
+            }
+            else {
+                for (j = 1; j <= Y+T-1-t; ++j) {
+                    for (i = t; i <= X+T-2; ++i) {
+                        B_local[j*(X+T) + i] = 0.2f * (A_local[j*(X+T) + i] + A_local[j*(X+T) + (i - 1)] + A_local[j*(X+T) + (i + 1)] + A_local[(j+1)*(X+T) + i] + A_local[(j-1)*(X+T) + i]);
+                    }
+                }
+            }
+        }
+        else if (gid_y > 0 && gid_y < M/Y-1) {
+            if (gid_x == 0) {
+                for ( j = t; j <= Y+2*T-1-t; ++j) {
+                    for (i = 1; i <= X+T-1-t; ++i) {
+                        B_local[j*(X+T) + i] = 0.2f * (A_local[j*(X+T) + i] + A_local[j*(X+T) + (i - 1)] + A_local[j*(X+T) + (i + 1)] + A_local[(j+1)*(X+T) + i] + A_local[(j-1)*(X+T) + i]);
+                    }
+                }
+            }
+            else if (gid_x < M/X-1) {
+                for ( j = t; j <= Y+2*T-1-t; ++j) {
+                    for (i = t; i <= X+2*T-1-t; ++i) {
+                        B_local[j*(X+2*T) + i] = 0.2f * (A_local[j*(X+2*T) + i] + A_local[j*(X+2*T) + (i - 1)] + A_local[j*(X+2*T) + (i + 1)] + A_local[(j+1)*(X+2*T) + i] + A_local[(j-1)*(X+2*T) + i]);
+                    }
+                }
+            }
+            else {
+                for ( j = t; j <= Y+2*T-1-t; ++j) {
+                    for (i = t; i <= X+T-2; ++i) {
+                        B_local[j*(X+T) + i] = 0.2f * (A_local[j*(X+T) + i] + A_local[j*(X+T) + (i - 1)] + A_local[j*(X+T) + (i + 1)] + A_local[(j+1)*(X+T) + i] + A_local[(j-1)*(X+T) + i]);
+                    }
+                }
+            }
+        }
+        else {
+            if (gid_x == 0) {
+                for ( j = t; j <= Y+T-2; ++j) {
+                    for (i = 1; i <= X+T-1-t; ++i) {
+                        B_local[j*(X+T) + i] = 0.2f * (A_local[j*(X+T) + i] + A_local[j*(X+T) + (i - 1)] + A_local[j*(X+T) + (i + 1)] + A_local[(j+1)*(X+T) + i] + A_local[(j-1)*(X+T) + i]);
+                    }
+                }
+            }
+            else if (gid_x < M/X-1) {
+                for ( j = t; j <= Y+T-2; ++j) {
+                    for (i = t; i <= X+2*T-1-t; ++i) {
+                        B_local[j*(X+2*T) + i] = 0.2f * (A_local[j*(X+2*T) + i] + A_local[j*(X+2*T) + (i - 1)] + A_local[j*(X+2*T) + (i + 1)] + A_local[(j+1)*(X+2*T) + i] + A_local[(j-1)*(X+2*T) + i]);
+                    }
+                }
+            }
+            else {
+                for ( j = t; j <= Y+T-2; ++j) {
+                    for (i = t; i <= X+T-2; ++i) {
+                        B_local[j*(X+T) + i] = 0.2f * (A_local[j*(X+T) + i] + A_local[j*(X+T) + (i - 1)] + A_local[j*(X+T) + (i + 1)] + A_local[(j+1)*(X+T) + i] + A_local[(j-1)*(X+T) + i]);
+                    }
+                }
+            }
+        }
+    }
+    barrier(CLK_LOCAL_MEM_FENCE);
 
-	if ((i >= 1) && (i < (n-1)) && (j >= 1) && (j < (n-1)))
-	{
-		A[i*n + j] = B[i*n + j];
-	}
 }
