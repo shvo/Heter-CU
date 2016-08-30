@@ -17,7 +17,7 @@
 
 #define XX 32
 #define YY 32
-#define TT 16
+#define TT 1
 
 //select the OpenCL device to use (can be GPU, CPU, or Accelerator such as Intel Xeon Phi)
 //#define OPENCL_DEVICE_SELECTION CL_DEVICE_TYPE_CPU
@@ -361,7 +361,7 @@ int main(int argc, char *argv[])
   	polybench_start_instruments;
 
 	int t;
-	for (t = 0; t < _PB_TSTEPS; t++)
+	for (t = 0; t < _PB_TSTEPS/TT; t++)
     	{
                 printf("t = %d\n", t);
 		cl_launch_kernel1(n);
