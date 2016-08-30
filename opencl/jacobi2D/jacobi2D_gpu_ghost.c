@@ -17,7 +17,7 @@
 
 #define XX 32
 #define YY 32
-#define TT 1
+#define TT 16
 
 //select the OpenCL device to use (can be GPU, CPU, or Accelerator such as Intel Xeon Phi)
 //#define OPENCL_DEVICE_SELECTION CL_DEVICE_TYPE_CPU

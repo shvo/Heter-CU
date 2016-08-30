@@ -19,7 +19,7 @@ typedef float DATA_TYPE;
 #define M 1024  // global size
 #define X 32   // local 0-dimension size
 #define Y 32   // local 1-dimension size
-#define T 1   // # merged iterations
+#define T 16   // # merged iterations
 
 
 __kernel __attribute__ ((reqd_work_group_size(1,1,1)))
@@ -232,34 +232,34 @@ void runJacobi2D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B, int n)
     else if (gid_y < M/Y-1) {
         if (gid_x == 0) {
             for (j = 0; j <= Y-1; ++j) {
-                async_work_group_copy(&A[(gid_y*Y+j)*M + gid_x*X], &A_local[(X+T)*(j+1)], X, 0);
+                async_work_group_copy(&A[(gid_y*Y+j)*M + gid_x*X], &A_local[(X+T)*(j+T)], X, 0);
             }
         }
         else if (gid_x < M/X-1) {
             for (j = 0; j <= Y-1; ++j) {
-                async_work_group_copy(&A[(gid_y*Y+j)*M + gid_x*X], &A_local[(X+2*T)*(j+1)+T], X, 0);
+                async_work_group_copy(&A[(gid_y*Y+j)*M + gid_x*X], &A_local[(X+2*T)*(j+T)+T], X, 0);
             }
         }
         else {
             for (j = 0; j <= Y-1; ++j) {
-                async_work_group_copy(&A[(gid_y*Y+j)*M + gid_x*X], &A_local[(X+T)*(j+1)+T], X, 0);
+                async_work_group_copy(&A[(gid_y*Y+j)*M + gid_x*X], &A_local[(X+T)*(j+T)+T], X, 0);
             }
         }
     }
     else {
         if (gid_x == 0) {
             for (j = 0; j <= Y-1; ++j) {
-                async_work_group_copy(&A[(gid_y*Y+j)*M + gid_x*X], &A_local[(X+T)*(j+1)], X, 0);
+                async_work_group_copy(&A[(gid_y*Y+j)*M + gid_x*X], &A_local[(X+T)*(j+T)], X, 0);
             }
         }
         else if (gid_x < M/X-1) {
             for (j = 0; j <= Y-1; ++j) {
-                async_work_group_copy(&A[(gid_y*Y+j)*M + gid_x*X], &A_local[(X+2*T)*(j+1)+T], X, 0);
+                async_work_group_copy(&A[(gid_y*Y+j)*M + gid_x*X], &A_local[(X+2*T)*(j+T)+T], X, 0);
             }
         }
         else {
             for (j = 0; j <= Y-1; ++j) {
-                async_work_group_copy(&A[(gid_y*Y+j)*M + gid_x*X], &A_local[(X+T)*(j+1)+T], X, 0);
+                async_work_group_copy(&A[(gid_y*Y+j)*M + gid_x*X], &A_local[(X+T)*(j+T)+T], X, 0);
             }
         }
     }
