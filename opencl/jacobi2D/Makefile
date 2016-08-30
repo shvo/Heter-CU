@@ -10,15 +10,15 @@ CCFLAGS=-O3 -lm
 LIBS = -lOpenCL 
 
 GPU_SRC = jacobi2D_gpu.c
-GPU_GHOST_SRC = jacobi2D_ghost_gpu.c
+GPU_GHOST_SRC = jacobi2D_gpu_ghost.c
 
 all: jacobi2D_gpu.exe \
-     jacobi2D_ghost_gpu.exe \
+     jacobi2D_gpu_ghost.exe \
 
 jacobi2D_gpu.exe: $(GPU_SRC)
 	$(CC) $< $(CCFLAGS) $(LIBS) -I$(OPENCL_INC) -I$(PATH_TO_COMMON) -L$(OPENCL_LIB) -o $@
 
-jacobi2D_ghost_gpu.exe: $(GPU_GHOST_SRC)
+jacobi2D_gpu_ghost.exe: $(GPU_GHOST_SRC)
 	$(CC) $<  $(CCFLAGS) $(LIBS) -I$(OPENCL_INC) -I$(PATH_TO_COMMON) -L$(OPENCL_LIB) -o $@
 
 clean:

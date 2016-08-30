@@ -15,6 +15,10 @@
 
 #define POLYBENCH_TIME 1
 
+#define XX 32
+#define YY 32
+#define TT 16
+
 //select the OpenCL device to use (can be GPU, CPU, or Accelerator such as Intel Xeon Phi)
 //#define OPENCL_DEVICE_SELECTION CL_DEVICE_TYPE_CPU
 #define OPENCL_DEVICE_SELECTION CL_DEVICE_TYPE_GPU
@@ -78,19 +82,21 @@ void compareResults(int n, DATA_TYPE POLYBENCH_2D(a,N,N,n,n), DATA_TYPE POLYBENC
 			{
 				fail++;
 			}
-        }
+                }
 	}
   
+        /*
 	for (i=0; i<n; i++) 
 	{
-       	for (j=0; j<n; j++) 
+       	        for (j=0; j<n; j++) 
 		{
         		if (percentDiff(b[i][j], b_outputFromGpu[i][j]) > PERCENT_DIFF_ERROR_THRESHOLD) 
 			{
         			fail++;
         		}
-       	}
+       	        }
 	}
+        */
 
 	// Print results
 	printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", PERCENT_DIFF_ERROR_THRESHOLD, fail);
@@ -193,7 +199,14 @@ void cl_load_prog()
 
 	// Build the program
 	errcode = clBuildProgram(clProgram, 1, &device_id, NULL, NULL, NULL);
-	if(errcode != CL_SUCCESS) printf("Error in building program\n");
+	if(errcode != CL_SUCCESS) {
+            size_t len;
+            char buffer[2048];
+
+            printf("Error %d in building program\n", errcode);
+            clGetProgramBuildInfo(clProgram, device_id, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
+            printf("%s\n", buffer);
+        }
 		
 	// Create the OpenCL kernel
 	clKernel1 = clCreateKernel(clProgram, "runJacobi2D_kernel1", &errcode);
@@ -206,10 +219,12 @@ void cl_load_prog()
 void cl_launch_kernel1(int n)
 {
 	size_t localWorkSize[2], globalWorkSize[2];
-	localWorkSize[0] = DIM_LOCAL_WORK_GROUP_X;
-	localWorkSize[1] = DIM_LOCAL_WORK_GROUP_Y;
-	globalWorkSize[0] = N;
-	globalWorkSize[1] = N;
+	//localWorkSize[0] = DIM_LOCAL_WORK_GROUP_X;
+	//localWorkSize[1] = DIM_LOCAL_WORK_GROUP_Y;
+        localWorkSize[0] = 1;
+	localWorkSize[1] = 1;
+	globalWorkSize[0] = N / XX;
+	globalWorkSize[1] = N / YY;
 	
 	// Set the arguments of the kernel
 	errcode =  clSetKernelArg(clKernel1, 0, sizeof(cl_mem), (void *)&a_mem_obj);
@@ -346,8 +361,9 @@ int main(int argc, char *argv[])
   	polybench_start_instruments;
 
 	int t;
-	for (t = 0; t < _PB_TSTEPS ; t++)
+	for (t = 0; t < _PB_TSTEPS; t++)
     	{
+                printf("t = %d\n", t);
 		cl_launch_kernel1(n);
 		//cl_launch_kernel2(n);
 	}
