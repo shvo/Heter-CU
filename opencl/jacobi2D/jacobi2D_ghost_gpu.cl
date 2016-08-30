@@ -16,23 +16,74 @@
 
 typedef float DATA_TYPE;
 
-#define M 16384  // global size
-#define N 256    // local size
-#define T 256    // # merged iterations
+#define M 1024  // global size
+#define X 32   // local 0-dimension size
+#define Y 32   // local 1-dimension size
+#define T 16   // # merged iterations
 
 
 __kernel __attribute__ ((reqd_work_group_size(1,1,1)))
 void runJacobi2D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B, int n)
 {
-        __local DATA_TYPE A_local[N+T*2];
-        __local DATA_TYPE B_local[N+T*2];
-	int i = get_global_id(1);
-	int j = get_global_id(0);
+    __local DATA_TYPE A_local[(X+2*T)*(Y+2*T)];
+    __local DATA_TYPE B_local[(X+2*T)*(Y+2*T)];
+    int gid_x = get_group_id(0);
+    int gid_y = get_group_id(1);
+
+    int i;
+    if (gid_y == 0) {
+        if (gid_x == 0) {
+            for (i = 0; i < Y + T; ++i) {
+                async_work_group_copy(&A_local[(X+T)*i], &A[(gid_y*Y+i)*M + gid_x*X], X+T, 0);
+            }
+        }
+        else if (gid_x < M/X-1) {
+            for (i = 0; i < Y + T; ++i) {
+                async_work_group_copy(&A_local[(X+2*T)*i], &A[(gid_y*Y+i)*M + gid_x*X-T], X+2*T, 0);
+            }
+        }
+        else {
+            for (i = 0; i < Y + T; ++i) {
+                async_work_group_copy(&A_local[(X+T)*i], &A[(gid_y*Y+i)*M + gid_x*X-T], X+T, 0);
+        }
+    }
+    else if (gid_y > 0 && gid_y < M/Y-1) {
+        if (gid_x == 0) {
+            for (i = 0; i < Y + 2*T; ++i) {
+                async_work_group_copy(&A_local[(X+T)*i], &A[(gid_y*Y+i-T)*M + gid_x*X], X+T, 0);
+            }
+        }
+        else if (gid_x < M/X-1) {
+            for (i = 0; i < Y + 2*T; ++i) {
+                async_work_group_copy(&A_local[(X+2*T)*i], &A[(gid_y*Y+i-T)*M + gid_x*X-T], X+2*T, 0);
+            }
+        }
+        else {
+            for (i = 0; i < Y + 2*T; ++i) {
+                async_work_group_copy(&A_local[(X+T)*i], &A[(gid_y*Y+i-T)*M + gid_x*X-T], X+T, 0);
+
+        }
+    }
+    else {
+        if (gid_x == 0) {
+            for (i = 0; i < Y + T; ++i) {
+                async_work_group_copy(&A_local[(X+T)*i], &A[(gid_y*Y+i-T)*M + gid_x*X], X+T, 0);
+            }
+        }
+        else if (gid_x < M/X-1) {
+            for (i = 0; i < Y + T; ++i) {
+                async_work_group_copy(&A_local[(X+2*T)*i], &A[(gid_y*Y+i-T)*M + gid_x*X-T], X+2*T, 0);
+        }
+        else {
+            for (i = 0; i < Y + T; ++i) {
+                async_work_group_copy(&A_local[(X+T)*i], &A[(gid_y*Y+i-T)*M + gid_x*X-T], X+T, 0);
+        }
+    }
+    barrier(CLK_LOCAL_MEM_FENCE);
 
 	if ((i >= 1) && (i < (n-1)) && (j >= 1) && (j < (n-1)))
 	{
-		B[i*n + j] = 0.2f * (A[i*n + j] + A[i*n + (j-1)] + A[i*n + (1 + j)] + A[(1 + i)*n + j] 
-				+ A[(i-1)*n + j]);	
+		B[i*n + j] = 0.2f * (A[i*n + j] + A[i*n + (j-1)] + A[i*n + (1 + j)] + A[(1 + i)*n + j] + A[(i-1)*n + j]);	
 	}
         barrier(CLK_LOCAL_MEM_FENCE);
 
