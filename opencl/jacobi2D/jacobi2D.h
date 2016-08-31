@@ -30,7 +30,7 @@
 #  endif
 
 #  ifdef STANDARD_DATASET /* Default if unspecified. */
-#define TSTEPS 512
+#define TSTEPS 128
 #define N 1024
 #  endif
 
