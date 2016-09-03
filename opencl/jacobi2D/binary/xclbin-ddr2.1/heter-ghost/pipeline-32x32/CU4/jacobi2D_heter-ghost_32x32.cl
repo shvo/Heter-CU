@@ -94,13 +94,101 @@ void runJacobi2D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B, int n)
     barrier(CLK_LOCAL_MEM_FENCE);
 
     // inital data for pipe
-    for (j = 1; j <= Y-1; ++j) {
-        write_pipe_block(p1, &A_local[j*X + X-2]);
-        write_pipe_block(p1, &A_local[j*X + X-1]);
+    if (gid_y == 0) {
+        if (gid_x == 0) {
+            for (j = 0; j <= Y-1; ++j) {
+                write_pipe_block(p1, &A_local[j*X + X-2]);
+                write_pipe_block(p1, &A_local[j*X + X-1]);
+            }
+            for (i = 0; i <= X-1; ++i) {
+                write_pipe_block(p1, &A_local[(Y-2)*X + i]);
+                write_pipe_block(p1, &A_local[(Y-1)*X + i]);
+            }
+        }
+        else if (gid_x < M/(2*X)-1) {
+            for (j = 0; j <= Y-1; ++j) {
+                write_pipe_block(p1, &A_local[j*X + X-2]);
+                write_pipe_block(p1, &A_local[j*X + X-1]);
+            }
+            for (i = 0; i <= X+T-1; ++i) {
+                write_pipe_block(p1, &A_local[(Y-2)*X + i]);
+                write_pipe_block(p1, &A_local[(Y-1)*X + i]);
+            }
+        }
+        else {
+            for (j = 0; j <= Y-1; ++j) {
+                write_pipe_block(p1, &A_local[j*X + X-2]);
+                write_pipe_block(p1, &A_local[j*X + X-1]);
+            }
+            for (i = 0; i <= X+T-1; ++i) {
+                write_pipe_block(p1, &A_local[(Y-2)*X + i]);
+                write_pipe_block(p1, &A_local[(Y-1)*X + i]);
+            }
+        }
     }
-    for (i = 1; i < X-1; ++i) {
-        write_pipe_block(p1, &A_local[(Y-2)*X + i]);
-        write_pipe_block(p1, &A_local[(Y-1)*X + i]);
+    else if (gid_y < M/(2*Y)-1) {
+        if (gid_x == 0) {
+            for (j = 0; j <= Y+T-1; ++j) {
+                write_pipe_block(p1, &A_local[j*X + X-2]);
+                write_pipe_block(p1, &A_local[j*X + X-1]);
+            }
+            for (i = 0; i <= X-1; ++i) {
+                write_pipe_block(p1, &A_local[(Y-2)*X + i]);
+                write_pipe_block(p1, &A_local[(Y-1)*X + i]);
+            }
+        }
+        else if (gid_x < M/(2*X)-1) {
+            for (j = 0; j <= Y+T-1; ++j) {
+                write_pipe_block(p1, &A_local[j*X + X-2]);
+                write_pipe_block(p1, &A_local[j*X + X-1]);
+            }
+            for (i = 0; i <= X+T-1; ++i) {
+                write_pipe_block(p1, &A_local[(Y-2)*X + i]);
+                write_pipe_block(p1, &A_local[(Y-1)*X + i]);
+            }
+        }
+        else {
+            for (j = 0; j <= Y+T-1; ++j) {
+                write_pipe_block(p1, &A_local[j*X + X-2]);
+                write_pipe_block(p1, &A_local[j*X + X-1]);
+            }
+            for (i = 0; i <= X+T-1; ++i) {
+                write_pipe_block(p1, &A_local[(Y-2)*X + i]);
+                write_pipe_block(p1, &A_local[(Y-1)*X + i]);
+            }
+        }
+    }
+    else {
+        if (gid_x == 0) {
+            for (j = 0; j <= Y+T-1; ++j) {
+                write_pipe_block(p1, &A_local[j*X + X-2]);
+                write_pipe_block(p1, &A_local[j*X + X-1]);
+            }
+            for (i = 0; i <= X-1; ++i) {
+                write_pipe_block(p1, &A_local[(Y-2)*X + i]);
+                write_pipe_block(p1, &A_local[(Y-1)*X + i]);
+            }
+        }
+        else if (gid_x < M/(2*X)-1) {
+            for (j = 0; j <= Y+T-1; ++j) {
+                write_pipe_block(p1, &A_local[j*X + X-2]);
+                write_pipe_block(p1, &A_local[j*X + X-1]);
+            }
+            for (i = 0; i <= X+T-1; ++i) {
+                write_pipe_block(p1, &A_local[(Y-2)*X + i]);
+                write_pipe_block(p1, &A_local[(Y-1)*X + i]);
+            }
+        }
+        else {
+            for (j = 0; j <= Y+T-1; ++j) {
+                write_pipe_block(p1, &A_local[j*X + X-2]);
+                write_pipe_block(p1, &A_local[j*X + X-1]);
+            }
+            for (i = 0; i <= X+T-1; ++i) {
+                write_pipe_block(p1, &A_local[(Y-2)*X + i]);
+                write_pipe_block(p1, &A_local[(Y-1)*X + i]);
+            }
+        }
     }
 
     int t;
@@ -129,10 +217,10 @@ void runJacobi2D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B, int n)
                     }
                 }
                 // write to pipe
-                for (j = 1; j <= Y-1; ++j) {
+                for (j = 0; j <= Y-1; ++j) {
                     write_pipe_block(p2, &A_local[j*X + X-2]);
                 }
-                for (i = 1; i <= X-1; ++i) {
+                for (i = 0; i <= X-1; ++i) {
                     write_pipe_block(p2, &A_local[(Y-2)*X + i]);
                 }
             }
@@ -158,13 +246,28 @@ void runJacobi2D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B, int n)
                         A_local[j*(X+T) + i] = B_local[j*(X+T) + i];
                     }
                 }
+                // write to pipe
+                for (j = 0; j <= Y-1; ++j) {
+                    write_pipe_block(p2, &A_local[j*X + X-2]);
+                }
+                for (i = t; i <= X+T-1; ++i) {
+                    write_pipe_block(p2, &A_local[(Y-2)*X + i]);
+                }
             }
             else {
+                // compute
                 for (j = 1; j <= Y-2; ++j) {
                     __attribute__((xcl_pipeline_loop))
                     for (i = t; i <= X+T-2; ++i) {
                         B_local[j*(X+T) + i] = 0.2f * (A_local[j*(X+T) + i] + A_local[j*(X+T) + (i - 1)] + A_local[j*(X+T) + (i + 1)] + A_local[(j+1)*(X+T) + i] + A_local[(j-1)*(X+T) + i]);
                     }
+                }
+                // read from pipe
+                for (j = 1; j <= Y-1; ++j) {
+                    read_pipe_block(p2, &A_local[j*(X+T) + X+T-1]);
+                }
+                for (i = t; i <= X+T-1; ++i) {
+                    read_pipe_block(p2, &A_local[(Y-1)*X + i]);
                 }
                 // swap
                 for (j = 1; j <= Y+T-1-t; ++j) {
@@ -173,15 +276,30 @@ void runJacobi2D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B, int n)
                          A_local[j*(X+T) + i] = B_local[j*(X+T) + i];
                     }
                 }
+                // write to pipe
+                for (j = 0; j <= Y-1; ++j) {
+                    write_pipe_block(p2, &A_local[j*X + X-2]);
+                }
+                for (i = t; i <= X+T-1; ++i) {
+                    write_pipe_block(p2, &A_local[(Y-2)*X + i]);
+                }
             }
         }
         else if (gid_y < M/(2*Y)-1) {
             if (gid_x == 0) {
+                // compute
                 for (j = t; j <= Y+T-2; ++j) {
                     __attribute__((xcl_pipeline_loop))
                     for (i = 1; i <= X-2; ++i) {
                         B_local[j*X + i] = 0.2f * (A_local[j*X + i] + A_local[j*X + (i - 1)] + A_local[j*X + (i + 1)] + A_local[(j+1)*X + i] + A_local[(j-1)*X + i]);
                     }
+                }
+                // read from pipe
+                for (j = t; j <= Y+T-1; ++j) {
+                    read_pipe_block(p2, &A_local[j*(X+T) + X+T-1]);
+                }
+                for (i = 1; i <= X-1; ++i) {
+                    read_pipe_block(p2, &A_local[(Y-1)*X + i]);
                 }
                 // swap
                 for (j = t; j <= Y+T-1; ++j) {
@@ -190,13 +308,28 @@ void runJacobi2D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B, int n)
                         A_local[j*X + i] = B_local[j*X + i];
                     }
                 }
+                // write to pipe
+                for (j = t; j <= Y+T-1; ++j) {
+                    write_pipe_block(p2, &A_local[j*X + X-2]);
+                }
+                for (i = 0; i <= X-1; ++i) {
+                    write_pipe_block(p2, &A_local[(Y-2)*X + i]);
+                }
             }
             else if (gid_x < M/(2*X)-1) {
+                // compute
                 for (j = t; j <= Y+T-2; ++j) {
                     __attribute__((xcl_pipeline_loop))
                     for (i = t; i <= X+T-2; ++i) {
                         B_local[j*(X+T) + i] = 0.2f * (A_local[j*(X+T) + i] + A_local[j*(X+T) + (i - 1)] + A_local[j*(X+T) + (i + 1)] + A_local[(j+1)*(X+T) + i] + A_local[(j-1)*(X+T) + i]);
                     }
+                }
+                // read from pipe
+                for (j = t; j <= Y+T-1; ++j) {
+                    read_pipe_block(p2, &A_local[j*(X+T) + X+T-1]);
+                }
+                for (i = t; i <= X+T-1; ++i) {
+                    read_pipe_block(p2, &A_local[(Y-1)*X + i]);
                 }
                 // swap
                 for (j = t; j <= Y+T-1; ++j) {
@@ -204,6 +337,13 @@ void runJacobi2D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B, int n)
                     for (i = t; i <= X+T-1; ++i) {
                         A_local[j*(X+T) + i] = B_local[j*(X+T) + i];
                     }
+                }
+                // write to pipe
+                for (j = t; j <= Y+T-1; ++j) {
+                    write_pipe_block(p2, &A_local[j*X + X-2]);
+                }
+                for (i = t; i <= X+T-1; ++i) {
+                    write_pipe_block(p2, &A_local[(Y-2)*X + i]);
                 }
             }
             else {
