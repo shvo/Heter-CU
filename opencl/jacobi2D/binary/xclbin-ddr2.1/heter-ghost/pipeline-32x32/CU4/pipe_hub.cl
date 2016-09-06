@@ -9,48 +9,50 @@ void runJacobi1D_connect_1_4(__global DATA_TYPE* A)
   
     int i, j;
 
-    // initialization
-    if (gid_x == 0) {
-        async_work_group_copy(h1, &A[(gid_y*2*Y+Y-2)*M + gid_x*2*X], 2*X+T, 0);
-        async_work_group_copy(h2_buf, &A[(gid_y*2*Y+Y-1)*M + gid_x*2*X], 2*X+T, 0);
-        async_work_group_copy(h3_buf, &A[(gid_y*2*Y+Y)*M + gid_x*2*X], 2*X+T, 0);
-        async_work_group_copy(h4, &A[(gid_y*2*Y+Y+1)*M + gid_x*2*X], 2*X+T, 0);
-    }
-    else if (gid_x < M/(2*X)-1) {
-        async_work_group_copy(h1, &A[(gid_y*2*Y+Y-2)*M + gid_x*2*X-T], 2*(X+T), 0);
-        async_work_group_copy(h2_buf, &A[(gid_y*2*Y+Y-1)*M + gid_x*2*X-T], 2*(X+T), 0);
-        async_work_group_copy(h3_buf, &A[(gid_y*2*Y+Y)*M + gid_x*2*X-T], 2*(X+T), 0);
-        async_work_group_copy(h4, &A[(gid_y*2*Y+Y+1)*M + gid_x*2*X-T], 2*X+T, 0);
-    }
-    else {
-        async_work_group_copy(h1, &A[(gid_y*2*Y+Y-2)*M + gid_x*2*X-T], 2*X+T, 0);
-        async_work_group_copy(h2_buf, &A[(gid_y*2*Y+Y-1)*M + gid_x*2*X-T], 2*X+T, 0);
-        async_work_group_copy(h3_buf, &A[(gid_y*2*Y+Y)*M + gid_x*2*X-T], 2*X+T, 0);
-        async_work_group_copy(h4, &A[(gid_y*2*Y+Y+1)*M + gid_x*2*X-T], 2*X+T, 0);
-    }
+    if (gid_x == 0 && gid_y ==0) {
+        // initialization
+        if (gid_x == 0) {
+            async_work_group_copy(h1, &A[(gid_y*2*Y+Y-2)*M + gid_x*2*X], 2*X+T, 0);
+            async_work_group_copy(h2_buf, &A[(gid_y*2*Y+Y-1)*M + gid_x*2*X], 2*X+T, 0);
+            async_work_group_copy(h3_buf, &A[(gid_y*2*Y+Y)*M + gid_x*2*X], 2*X+T, 0);
+            async_work_group_copy(h4, &A[(gid_y*2*Y+Y+1)*M + gid_x*2*X], 2*X+T, 0);
+        }
+        else if (gid_x < M/(2*X)-1) {
+            async_work_group_copy(h1, &A[(gid_y*2*Y+Y-2)*M + gid_x*2*X-T], 2*(X+T), 0);
+            async_work_group_copy(h2_buf, &A[(gid_y*2*Y+Y-1)*M + gid_x*2*X-T], 2*(X+T), 0);
+            async_work_group_copy(h3_buf, &A[(gid_y*2*Y+Y)*M + gid_x*2*X-T], 2*(X+T), 0);
+            async_work_group_copy(h4, &A[(gid_y*2*Y+Y+1)*M + gid_x*2*X-T], 2*X+T, 0);
+        }
+        else {
+            async_work_group_copy(h1, &A[(gid_y*2*Y+Y-2)*M + gid_x*2*X-T], 2*X+T, 0);
+          async_work_group_copy(h2_buf, &A[(gid_y*2*Y+Y-1)*M + gid_x*2*X-T], 2*X+T, 0);
+          async_work_group_copy(h3_buf, &A[(gid_y*2*Y+Y)*M + gid_x*2*X-T], 2*X+T, 0);
+          async_work_group_copy(h4, &A[(gid_y*2*Y+Y+1)*M + gid_x*2*X-T], 2*X+T, 0);
+        }
 
-    if (gid_y == 0) {
-        for (j = 0; j <= 2*Y+T-1; ++j) {
-            async_work_group_copy(v1, &A[(gid_y*2*Y)*M + gid_x*2*X+X-2], 2*Y+T, 0);
-            async_work_group_copy(v2_buf, &A[(gid_y*2*Y)*M + gid_x*2*X+X-1], 2*Y+T, 0);
-            async_work_group_copy(v3_buf, &A[(gid_y*2*Y)*M + gid_x*2*X+X], 2*Y+T, 0);
-            async_work_group_copy(v4, &A[(gid_y*2*Y)*M + gid_x*2*X+X+1], 2*Y+T, 0);
+        if (gid_y == 0) {
+            for (j = 0; j <= 2*Y+T-1; ++j) {
+                v1[j] = A[(gid_y*2*Y+j)*M + gid_x*2*X+X-2];
+                v2_buf[j] = A[(gid_y*2*Y+j)*M + gid_x*2*X+X-1];
+                v3[j] = A[(gid_y*2*Y+j)*M + gid_x*2*X+X];
+                v4[j] = A[(gid_y*2*Y+j)*M + gid_x*2*X+X+1];
+            }
         }
-    }
-    else if (gid_y < M/(2*Y)-1) {
-        for (j = 0; j <= 2*(Y+T)-1; ++j) {
-            async_work_group_copy(v1, &A[(gid_y*2*Y-T)*M + gid_x*2*X+X-2], 2*(Y+T), 0);
-            async_work_group_copy(v2_buf, &A[(gid_y*2*Y-T)*M + gid_x*2*X+X-1], 2*(Y+T), 0);
-            async_work_group_copy(v3_buf, &A[(gid_y*2*Y-T)*M + gid_x*2*X+X], 2*(Y+T), 0);
-            async_work_group_copy(v4, &A[(gid_y*2*Y-T)*M + gid_x*2*X+X+1], 2*(Y+T), 0);
+        else if (gid_y < M/(2*Y)-1) {
+            for (j = 0; j <= 2*(Y+T)-1; ++j) {
+                v1[j] = A[(gid_y*2*Y-T+j)*M + gid_x*2*X+X-2];
+                v2_buf[j] = A[(gid_y*2*Y-T+j)*M + gid_x*2*X+X-1];
+                v3[j] = A[(gid_y*2*Y-T+j)*M + gid_x*2*X+X];
+                v4[j] = A[(gid_y*2*Y-T+j)*M + gid_x*2*X+X+1];
+            }
         }
-    }
-    else {
-        for (j = 0; j <= 2*Y+T-1; ++j) {
-            async_work_group_copy(v1, &A[(gid_y*2*Y-T)*M + gid_x*2*X+X-2], 2*Y+T, 0);
-            async_work_group_copy(v2_buf, &A[(gid_y*2*Y-T)*M + gid_x*2*X+X-1], 2*Y+T, 0);
-            async_work_group_copy(v3_buf, &A[(gid_y*2*Y-T)*M + gid_x*2*X+X], 2*Y+T, 0);
-            async_work_group_copy(v4, &A[(gid_y*2*Y-T)*M + gid_x*2*X+X+1], 2*Y+T, 0);
+        else {
+            for (j = 0; j <= 2*Y+T-1; ++j) {
+                v1[j] = A[(gid_y*2*Y-T+j)*M + gid_x*2*X+X-2];
+                v2_buf[j] = A[(gid_y*2*Y-T+j)*M + gid_x*2*X+X-1];
+                v3[j] = A[(gid_y*2*Y-T+j)*M + gid_x*2*X+X];
+                v4[j] = A[(gid_y*2*Y-T+j)*M + gid_x*2*X+X+1];
+            }
         }
     }
     barrier(CLK_LOCAL_MEM_FENCE);
@@ -58,7 +60,7 @@ void runJacobi1D_connect_1_4(__global DATA_TYPE* A)
     int t;
 
     for (t = 1; t <= T; ++t) { 
-        // calculate
+        // compute
         if (gid_y == 0) {
             for (j = 1; j <= 2*Y+T-1-t; ++j) {
                 v2[j] = 0.2f * (v2_buf[j-1] + v2_buf[j] + v2_buf[j+1] + v1[j] + v3_buf[j]);
