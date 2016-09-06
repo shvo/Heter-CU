@@ -66,52 +66,6 @@ void runJacobi2D_kernel1(__global DATA_TYPE* A, __global DATA_TYPE* B, int n)
     }
     barrier(CLK_LOCAL_MEM_FENCE);
 
-    // inital data for pipe
-    if (gid_y == 0) {
-        if (gid_x == 0) {
-            for (j = 0; j <= Y-1; ++j) {
-                write_pipe_block(p1, &A_local[j*X + X-2]);
-                write_pipe_block(p1, &A_local[j*X + X-1]);
-            }
-            for (i = 0; i <= X-1; ++i) {
-                write_pipe_block(p1, &A_local[(Y-2)*X + i]);
-                write_pipe_block(p1, &A_local[(Y-1)*X + i]);
-            }
-        }
-        else {
-            for (j = 0; j <= Y-1; ++j) {
-                write_pipe_block(p1, &A_local[j*(X+T) + X-2]);
-                write_pipe_block(p1, &A_local[j*(X+T) + X-1]);
-            }
-            for (i = 0; i <= X+T-1; ++i) {
-                write_pipe_block(p1, &A_local[(Y-2)*(X+T) + i]);
-                write_pipe_block(p1, &A_local[(Y-1)*(X+T) + i]);
-            }
-        }
-    }
-    else {
-        if (gid_x == 0) {
-            for (j = 0; j <= Y+T-1; ++j) {
-                write_pipe_block(p1, &A_local[j*X + X-2]);
-                write_pipe_block(p1, &A_local[j*X + X-1]);
-            }
-            for (i = 0; i <= X-1; ++i) {
-                write_pipe_block(p1, &A_local[(Y-2)*X + i]);
-                write_pipe_block(p1, &A_local[(Y-1)*X + i]);
-            }
-        }
-        else {
-            for (j = 0; j <= Y+T-1; ++j) {
-                write_pipe_block(p1, &A_local[j*(X+T) + X-2]);
-                write_pipe_block(p1, &A_local[j*(X+T) + X-1]);
-            }
-            for (i = 0; i <= X+T-1; ++i) {
-                write_pipe_block(p1, &A_local[(Y-2)*(X+T) + i]);
-                write_pipe_block(p1, &A_local[(Y-1)*(X+T) + i]);
-            }
-        }
-    }
-
     int t;
     for (t = 1; t <= T; ++t) { 
         if (gid_y == 0) {
@@ -302,52 +256,6 @@ void runJacobi2D_kernel2(__global DATA_TYPE* A, __global DATA_TYPE* B, int n)
         }
     }
     barrier(CLK_LOCAL_MEM_FENCE);
-
-    // inital data for pipe
-    if (gid_y == 0) {
-        if (gid_x < M/(2*X)-1) {
-            for (j = 0; j <= Y-1; ++j) {
-                write_pipe_block(p3, &A_local[j*(X+T)]);
-                write_pipe_block(p3, &A_local[j*(X+T) + 1]);
-            }
-            for (i = 0; i <= X+T-1; ++i) {
-                write_pipe_block(p3, &A_local[(Y-2)*(X+T) + i]);
-                write_pipe_block(p3, &A_local[(Y-1)*(X+T) + i]);
-            }
-        }
-        else {
-            for (j = 0; j <= Y-1; ++j) {
-                write_pipe_block(p3, &A_local[j*X]);
-                write_pipe_block(p3, &A_local[j*X + 1]);
-            }
-            for (i = 0; i <= X-1; ++i) {
-                write_pipe_block(p3, &A_local[(Y-2)*X + i]);
-                write_pipe_block(p3, &A_local[(Y-1)*X + i]);
-            }
-        }
-    }
-    else {
-        if (gid_x < M/(2*X)-1) {
-            for (j = 0; j <= Y+T-1; ++j) {
-                write_pipe_block(p3, &A_local[j*(X+T)]);
-                write_pipe_block(p3, &A_local[j*(X+T) + 1]);
-            }
-            for (i = 0; i <= X+T-1; ++i) {
-                write_pipe_block(p3, &A_local[(Y-2)*(X+T) + i]);
-                write_pipe_block(p3, &A_local[(Y-1)*(X+T) + i]);
-            }
-        }
-        else {
-            for (j = 0; j <= Y+T-1; ++j) {
-                write_pipe_block(p3, &A_local[j*X]);
-                write_pipe_block(p3, &A_local[j*X + 1]);
-            }
-            for (i = 0; i <= X-1; ++i) {
-                write_pipe_block(p3, &A_local[(Y-2)*X + i]);
-                write_pipe_block(p3, &A_local[(Y-1)*X + i]);
-            }
-        }
-    }
 
     int t;
     for (t = 1; t <= T; ++t) { 
@@ -540,52 +448,6 @@ void runJacobi2D_kernel3(__global DATA_TYPE* A, __global DATA_TYPE* B, int n)
     }
     barrier(CLK_LOCAL_MEM_FENCE);
 
-    // inital data for pipe
-    if (gid_y < M/(2*Y)-1) {
-        if (gid_x == 0) {
-            for (j = 0; j <= Y+T-1; ++j) {
-                write_pipe_block(p5, &A_local[j*X + X-2]);
-                write_pipe_block(p5, &A_local[j*X + X-1]);
-            }
-            for (i = 0; i <= X-1; ++i) {
-                write_pipe_block(p5, &A_local[i]);
-                write_pipe_block(p5, &A_local[X + i]);
-            }
-        }
-        else {
-            for (j = 0; j <= Y+T-1; ++j) {
-                write_pipe_block(p5, &A_local[j*(X+T) + X-2]);
-                write_pipe_block(p5, &A_local[j*(X+T) + X-1]);
-            }
-            for (i = 0; i <= X+T-1; ++i) {
-                write_pipe_block(p5, &A_local[i]);
-                write_pipe_block(p5, &A_local[X+T + i]);
-            }
-        }
-    }
-    else {
-        if (gid_x == 0) {
-            for (j = 0; j <= Y-1; ++j) {
-                write_pipe_block(p5, &A_local[j*X + X-2]);
-                write_pipe_block(p5, &A_local[j*X + X-1]);
-            }
-            for (i = 0; i <= X-1; ++i) {
-                write_pipe_block(p5, &A_local[i]);
-                write_pipe_block(p5, &A_local[X + i]);
-            }
-        }
-        else {
-            for (j = 0; j <= Y-1; ++j) {
-                write_pipe_block(p5, &A_local[j*(X+T) + X-2]);
-                write_pipe_block(p5, &A_local[j*(X+T) + X-1]);
-            }
-            for (i = 0; i <= X+T-1; ++i) {
-                write_pipe_block(p5, &A_local[i]);
-                write_pipe_block(p5, &A_local[X+T + i]);
-            }
-        }
-    }
-
     int t;
     for (t = 1; t <= T; ++t) { 
         if (gid_y < M/(2*Y)-1) {
@@ -761,52 +623,6 @@ void runJacobi2D_kernel4(__global DATA_TYPE* A, __global DATA_TYPE* B, int n)
         }
     }
     barrier(CLK_LOCAL_MEM_FENCE);
-
-    // inital data for pipe
-    if (gid_y < M/(2*Y)-1) {
-        if (gid_x < M/(2*X)-1) {
-            for (j = 0; j <= Y+T-1; ++j) {
-                write_pipe_block(p7, &A_local[j*(X+T)]);
-                write_pipe_block(p7, &A_local[j*(X+T) + 1]);
-            }
-            for (i = 0; i <= X+T-1; ++i) {
-                write_pipe_block(p7, &A_local[i]);
-                write_pipe_block(p7, &A_local[X+T + i]);
-            }
-        }
-        else {
-            for (j = 0; j <= Y+T-1; ++j) {
-                write_pipe_block(p7, &A_local[j*X]);
-                write_pipe_block(p7, &A_local[j*X + 1]);
-            }
-            for (i = 0; i <= X-1; ++i) {
-                write_pipe_block(p7, &A_local[i]);
-                write_pipe_block(p7, &A_local[X + i]);
-            }
-        }
-    }
-    else {
-        if (gid_x < M/(2*X)-1) {
-            for (j = 0; j <= Y-1; ++j) {
-                write_pipe_block(p7, &A_local[j*(X+T)]);
-                write_pipe_block(p7, &A_local[j*(X+T) + 1]);
-            }
-            for (i = 0; i <= X+T-1; ++i) {
-                write_pipe_block(p7, &A_local[i]);
-                write_pipe_block(p7, &A_local[X+T + i]);
-            }
-        }
-        else {
-            for (j = 0; j <= Y-1; ++j) {
-                write_pipe_block(p7, &A_local[j*X]);
-                write_pipe_block(p7, &A_local[j*X + 1]);
-            }
-            for (i = 0; i <= X-1; ++i) {
-                write_pipe_block(p7, &A_local[i]);
-                write_pipe_block(p7, &A_local[X + i]);
-            }
-        }
-    }
 
     int t;
     for (t = 1; t <= T; ++t) { 
