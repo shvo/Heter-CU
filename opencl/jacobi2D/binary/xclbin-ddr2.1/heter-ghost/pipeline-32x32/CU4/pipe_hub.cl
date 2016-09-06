@@ -59,19 +59,82 @@ void runJacobi1D_connect_1_4(__global DATA_TYPE* A)
 
     for (t = 1; t <= T; ++t) { 
         // calculate
-        for (j = t; j <= 2*(X+T)-1-t; ++j) {
-            v2[j] = 0.2f * (v2_buf[j-1] + v2_buf[j] + v2_buf[j+1] + v1[j] + v3_buf[j]);
-            v3[j] = 0.2f * (v3_buf[j-1] + v3_buf[j] + v3_buf[j+1] + v2_buf[j] + v4[j]);
+        if (gid_y == 0) {
+            for (j = 1; j <= 2*Y+T-1-t; ++j) {
+                v2[j] = 0.2f * (v2_buf[j-1] + v2_buf[j] + v2_buf[j+1] + v1[j] + v3_buf[j]);
+                v3[j] = 0.2f * (v3_buf[j-1] + v3_buf[j] + v3_buf[j+1] + v2_buf[j] + v4[j]);
+            }
         }
-        for (i = t; i <= 2*(X+T)-1-t; ++i) {
-            h2[i] = 0.2f * (h2_buf[i-1] + h2_buf[i] + h2_buf[i+1] + h1[i] + h3_buf[i]);
-            h3[i] = 0.2f * (h3_buf[i-1] + h3_buf[i] + h3_buf[i+1] + h2_buf[i] + h4[i]);
+        else if (gid_y < M/(2*Y)-1) {
+            for (j = t; j <= 2*(Y+T)-1-t; ++j) {
+                v2[j] = 0.2f * (v2_buf[j-1] + v2_buf[j] + v2_buf[j+1] + v1[j] + v3_buf[j]);
+                v3[j] = 0.2f * (v3_buf[j-1] + v3_buf[j] + v3_buf[j+1] + v2_buf[j] + v4[j]);
+            }
+        }
+        else {
+            for (j = 1; j <= 2*Y+T-2; ++j) {
+                v2[j] = 0.2f * (v2_buf[j-1] + v2_buf[j] + v2_buf[j+1] + v1[j] + v3_buf[j]);
+                v3[j] = 0.2f * (v3_buf[j-1] + v3_buf[j] + v3_buf[j+1] + v2_buf[j] + v4[j]);
+            }
+        }
+        
+        if (gid_x == 0) {
+            for (i = 1; i <= 2*X+T-1-t; ++i) {
+                h2[i] = 0.2f * (h2_buf[i-1] + h2_buf[i] + h2_buf[i+1] + h1[i] + h3_buf[i]);
+                h3[i] = 0.2f * (h3_buf[i-1] + h3_buf[i] + h3_buf[i+1] + h2_buf[i] + h4[i]);
+            }
+        }
+        else if (gid_x < M/(2*X)-1) {
+            for (i = t; i <= 2*(X+T)-1-t; ++i) {
+                h2[i] = 0.2f * (h2_buf[i-1] + h2_buf[i] + h2_buf[i+1] + h1[i] + h3_buf[i]);
+                h3[i] = 0.2f * (h3_buf[i-1] + h3_buf[i] + h3_buf[i+1] + h2_buf[i] + h4[i]);
+            }
+        }
+        else {
+            for (i = t; i <= 2*X+T-2; ++i) {
+                h2[i] = 0.2f * (h2_buf[i-1] + h2_buf[i] + h2_buf[i+1] + h1[i] + h3_buf[i]);
+                h3[i] = 0.2f * (h3_buf[i-1] + h3_buf[i] + h3_buf[i+1] + h2_buf[i] + h4[i]);
         }
 
-    // write to kernels
-        for (j = t; j <= 2*(X+T)-1-t; ++j) {
+        // write to kernels
+        if (gid_y == 0) {
+            for (j = 1; j <= Y-1; ++j) {
+                write_pipe_block(p2, &v2[j]);
+                write_pipe_block(p4, &v3[j]);
+            }
+            for (j = 1; j <= Y+T-1; ++j) {
+                write_pipe_block(p6, &v2[j+Y]);
+                write_pipe_block(p8, &v3[j+Y]);
+            }
+        }
+        else if (gid_y < M/(2*Y)-1) {
+            for (j = t; j <= Y+T-1; ++j) {
+                write_pipe_block(p2, &v2[j]);
+                write_pipe_block(p4, &v3[j]);
+            }
+            for (j = t; j <= Y+T-1; ++j) {
+                write_pipe_block(p6, &v2[j+Y+T]);
+                write_pipe_block(p8, &v3[j+Y+T]);
+            }
+        }
+        else {
+            for (j = t; j <= Y+T-1; ++j) {
+                write_pipe_block(p2, &v2[j]);
+                write_pipe_block(p4, &v3[j]);
+            }
+            for (j = 1; j <= Y-1; ++j) {
+                write_pipe_block(p6, &v2[j+Y+T]);
+                write_pipe_block(p8, &v3[j+Y+T]);
+            }
         }
 
-    // read from kernels
+        if (gid_x == 0) {
+        }
+        else if (gid_x < M/(2*X)-1) {
+        }
+        else {
+        }
+
+        // read from kernels
     }
 }
