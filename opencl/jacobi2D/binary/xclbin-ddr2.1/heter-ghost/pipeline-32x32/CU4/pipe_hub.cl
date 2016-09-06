@@ -103,7 +103,7 @@ void runJacobi1D_connect_1_4(__global DATA_TYPE* A)
                 write_pipe_block(p2, &v2[j]);
                 write_pipe_block(p4, &v3[j]);
             }
-            for (j = 1; j <= Y+T-1-t; ++j) {
+            for (j = 0; j <= Y+T-1-t; ++j) {
                 write_pipe_block(p6, &v2[j+Y]);
                 write_pipe_block(p8, &v3[j+Y]);
             }
@@ -111,7 +111,7 @@ void runJacobi1D_connect_1_4(__global DATA_TYPE* A)
                 read_pipe_block(p1, &v1[j]);
                 read_pipe_block(p3, &v4[j]);
             }
-            for (j = 1; j <= Y+T-1-t; ++j) {
+            for (j = 0; j <= Y+T-1-t; ++j) {
                 read_pipe_block(p5, &v1[j+Y]);
                 read_pipe_block(p7, &v4[j+Y]);
             }
@@ -121,7 +121,7 @@ void runJacobi1D_connect_1_4(__global DATA_TYPE* A)
                 write_pipe_block(p2, &v2[j]);
                 write_pipe_block(p4, &v3[j]);
             }
-            for (j = 1; j <= Y+T-1-t; ++j) {
+            for (j = 0; j <= Y+T-1-t; ++j) {
                 write_pipe_block(p6, &v2[j+Y+T]);
                 write_pipe_block(p8, &v3[j+Y+T]);
             }
@@ -129,7 +129,7 @@ void runJacobi1D_connect_1_4(__global DATA_TYPE* A)
                 read_pipe_block(p1, &v1[j]);
                 read_pipe_block(p3, &v4[j]);
             }
-            for (j = 1; j <= Y+T-1-t; ++j) {
+            for (j = 0; j <= Y+T-1-t; ++j) {
                 read_pipe_block(p5, &v1[j+Y+T]);
                 read_pipe_block(p7, &v4[j+Y+T]);
             }
@@ -139,7 +139,7 @@ void runJacobi1D_connect_1_4(__global DATA_TYPE* A)
                 write_pipe_block(p2, &v2[j]);
                 write_pipe_block(p4, &v3[j]);
             }
-            for (j = 1; j <= Y-2; ++j) {
+            for (j = 0; j <= Y-2; ++j) {
                 write_pipe_block(p6, &v2[j+Y+T]);
                 write_pipe_block(p8, &v3[j+Y+T]);
             }
@@ -147,7 +147,7 @@ void runJacobi1D_connect_1_4(__global DATA_TYPE* A)
                 read_pipe_block(p1, &v1[j]);
                 read_pipe_block(p3, &v4[j]);
             }
-            for (j = 1; j <= Y-2; ++j) {
+            for (j = 0; j <= Y-2; ++j) {
                 read_pipe_block(p5, &v1[j+Y+T]);
                 read_pipe_block(p7, &v4[j+Y+T]);
             }
@@ -155,56 +155,56 @@ void runJacobi1D_connect_1_4(__global DATA_TYPE* A)
           // horizontal data
         if (gid_x == 0) {
             for (i = 1; i <= X-1; ++i) {
-                write_pipe_block(p2, &h2[j]);
-                write_pipe_block(p6, &h3[j]);
+                write_pipe_block(p2, &h2[i]);
+                write_pipe_block(p6, &h3[i]);
             }
-            for (i = 1; i <= X+T-1-t; ++i) {
-                write_pipe_block(p4, &h2[j+X]);
-                write_pipe_block(p8, &h3[j+X]);
+            for (i = 0; i <= X+T-1-t; ++i) {
+                write_pipe_block(p4, &h2[i+X]);
+                write_pipe_block(p8, &h3[i+X]);
             }
             for (i = 1; i <= X-1; ++i) {
-                read_pipe_block(p1, &h1[j]);
-                read_pipe_block(p5, &h4[j]);
+                read_pipe_block(p1, &h1[i]);
+                read_pipe_block(p5, &h4[i]);
             }
-            for (i = 1; i <= X+T-1-t; ++i) {
-                read_pipe_block(p3, &h1[j+X]);
-                read_pipe_block(p7, &h4[j+X]);
+            for (i = 0; i <= X+T-1-t; ++i) {
+                read_pipe_block(p3, &h1[i+X]);
+                read_pipe_block(p7, &h4[i+X]);
             }
         }
         else if (gid_x < M/(2*X)-1) {
             for (i = t; i <= X+T-1; ++i) {
-                write_pipe_block(p2, &h2[j]);
-                write_pipe_block(p6, &h3[j]);
+                write_pipe_block(p2, &h2[i]);
+                write_pipe_block(p6, &h3[i]);
             }
-            for (i = 1; i <= X+T-1-t; ++i) {
-                write_pipe_block(p4, &h2[j+X+T]);
-                write_pipe_block(p8, &h3[j+X+T]);
+            for (i = 0; i <= X+T-1-t; ++i) {
+                write_pipe_block(p4, &h2[i+X+T]);
+                write_pipe_block(p8, &h3[i+X+T]);
             }
             for (i = t; i <= X+T-1; ++i) {
-                read_pipe_block(p1, &h1[j]);
-                read_pipe_block(p5, &h4[j]);
+                read_pipe_block(p1, &h1[i]);
+                read_pipe_block(p5, &h4[i]);
             }
-            for (i = 1; i <= X+T-1-t; ++i) {
-                read_pipe_block(p3, &h1[j+X+T]);
-                read_pipe_block(p7, &h4[j+X+T]);
+            for (i = 0; i <= X+T-1-t; ++i) {
+                read_pipe_block(p3, &h1[i+X+T]);
+                read_pipe_block(p7, &h4[i+X+T]);
             }
         }
         else {
             for (i = t; i <= X+T-1; ++i) {
-                write_pipe_block(p2, &h2[j]);
-                write_pipe_block(p6, &h3[j]);
+                write_pipe_block(p2, &h2[i]);
+                write_pipe_block(p6, &h3[i]);
             }
-            for (i = 1; i <= X-2; ++i) {
-                write_pipe_block(p4, &h2[j+X+T]);
-                write_pipe_block(p8, &h3[j+X+T]);
+            for (i = 0; i <= X-2; ++i) {
+                write_pipe_block(p4, &h2[i+X+T]);
+                write_pipe_block(p8, &h3[i+X+T]);
             }
             for (i = t; i <= X+T-1; ++i) {
-                read_pipe_block(p1, &h1[j]);
-                read_pipe_block(p5, &h4[j]);
+                read_pipe_block(p1, &h1[i]);
+                read_pipe_block(p5, &h4[i]);
             }
-            for (i = 1; i <= X-2; ++i) {
-                read_pipe_block(p3, &h1[j+X+T]);
-                read_pipe_block(p7, &h4[j+X+T]);
+            for (i = 0; i <= X-2; ++i) {
+                read_pipe_block(p3, &h1[i+X+T]);
+                read_pipe_block(p7, &h4[i+X+T]);
             }
         }
     }
