@@ -279,8 +279,8 @@ void cl_launch_kernel1(int n)
 	//localWorkSize[1] = DIM_LOCAL_WORK_GROUP_Y;
         localWorkSize[0] = 1;
 	localWorkSize[1] = 1;
-	globalWorkSize[0] = N / XX;
-	globalWorkSize[1] = N / YY;
+	globalWorkSize[0] = N / (2*XX);
+	globalWorkSize[1] = N / (2*YY);
 	
 	// Set the arguments of the kernel
 	errcode =  clSetKernelArg(clKernel1, 0, sizeof(cl_mem), (void *)&a_mem_obj);
