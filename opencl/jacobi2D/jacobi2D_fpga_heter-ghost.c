@@ -15,9 +15,9 @@
 
 #define POLYBENCH_TIME 1
 
-#define XX 32
-#define YY 32
-#define TT 1
+//#define XX 32
+//#define YY 32
+//#define TT 1
 
 //select the OpenCL device to use (can be GPU, CPU, or Accelerator such as Intel Xeon Phi)
 //#define OPENCL_DEVICE_SELECTION CL_DEVICE_TYPE_CPU
@@ -272,8 +272,13 @@ void cl_load_prog()
 	clFinish(clCommandQue);
 }
 
-void cl_launch_kernel1(int n)
+void cl_launch_kernel1(int n, char **argv)
 {
+        char *ptr_xy;
+        long XX, YY;
+        XX = strtol(argv[2], &ptr_xy, 10);
+        YY = strtol(argv[3], &ptr_xy, 10);
+
 	size_t localWorkSize[2], globalWorkSize[2];
 	//localWorkSize[0] = DIM_LOCAL_WORK_GROUP_X;
 	//localWorkSize[1] = DIM_LOCAL_WORK_GROUP_Y;
@@ -455,8 +460,8 @@ int main(int argc, char *argv[])
         #if OPENCL_DEVICE_SELECTION!=CL_DEVICE_TYPE_ACCELERATOR
 	read_cl_file();
         #else
-        if (argc != 2){
-          printf("%s <inputfile>\n", argv[0]);
+        if (argc != 5){
+          printf("%s <xclbin> <XX> <YY> <TT>\n", argv[0]);
           return EXIT_FAILURE;
         }
         read_cl_file(argv);
@@ -470,10 +475,15 @@ int main(int argc, char *argv[])
   	polybench_start_instruments;
 
 	int t;
+        char *ptr;
+        long TT;
+        TT = strtol(argv[4], &ptr, 10);
+        //printf("TT = %d\n", TT);
+
 	for (t = 0; t < _PB_TSTEPS/TT; t++)
     	{
                 printf("t = %d\n", t);
-		cl_launch_kernel1(n);
+		cl_launch_kernel1(n, argv);
 		//cl_launch_kernel2(n);
 	}
 
