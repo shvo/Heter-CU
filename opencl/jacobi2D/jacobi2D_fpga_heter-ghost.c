@@ -267,7 +267,7 @@ void cl_load_prog()
 	if(errcode != CL_SUCCESS) printf("Error in creating kernel3\n");
 	clKernel4 = clCreateKernel(clProgram, "runJacobi2D_kernel4", &errcode);
 	if(errcode != CL_SUCCESS) printf("Error in creating kernel4\n");
-	clConnect_1_4 = clCreateKernel(clProgram, "runJacobi1D_connect_1_4", &errcode);
+	clConnect_1_4 = clCreateKernel(clProgram, "runJacobi2D_connect_1_4", &errcode);
 	if(errcode != CL_SUCCESS) printf("Error in creating connect_1_4 kernel\n");
 	clFinish(clCommandQue);
 }

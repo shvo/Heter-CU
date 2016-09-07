@@ -766,7 +766,7 @@ void runJacobi2D_kernel4(__global DATA_TYPE* A, __global DATA_TYPE* B, int n)
 }
 
 __kernel __attribute__ ((reqd_work_group_size(1,1,1)))
-void runJacobi1D_connect_1_4(__global DATA_TYPE* A)
+void runJacobi2D_connect_1_4(__global DATA_TYPE* A)
 {
     __local float h1[2*(X+T)], h2[2*(X+T)], h2_buf[2*(X+T)], h3[2*(X+T)], h3_buf[2*(X+T)], h4[2*(X+T)];    
     __local float v1[2*(X+T)], v2[2*(X+T)], v2_buf[2*(X+T)], v3[2*(X+T)], v3_buf[2*(X+T)], v4[2*(X+T)];    
